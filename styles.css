@@ -142,6 +142,16 @@ header {
     padding-bottom: 120px; 
 }
 
+/* Settings Flex Layout */
+.settings-flex {
+    flex-direction: column;
+    height: calc(100vh - 180px); /* Adjust height to fit screen */
+    justify-content: space-between;
+}
+.settings-content {
+    flex-grow: 1;
+}
+
 /* Common Card Style */
 .card {
     background: #1e1e1e;
@@ -153,7 +163,6 @@ header {
 }
 
 /* --- DEVICE GRID & COMPACT CARD STYLES --- */
-
 .grid-container {
     display: grid;
     grid-template-columns: 1fr 1fr; /* Two Columns */
@@ -161,19 +170,16 @@ header {
     margin-bottom: 25px;
 }
 
-/* The Compact Switch Card */
 .device-card {
     background: #252525;
     padding: 10px;
     border-radius: 12px;
-    height: 70px; /* Reduced Compact Height */
-    
+    height: 70px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 6px; /* Reduced gap */
-    
+    gap: 6px; 
     cursor: pointer;
     box-shadow: 0 4px 6px rgba(0,0,0,0.2);
     border: 1px solid #333;
@@ -182,9 +188,8 @@ header {
     overflow: hidden;
 }
 
-/* Device Name (Top) */
 .device-name {
-    font-size: 15px; /* Slightly smaller font */
+    font-size: 15px;
     font-weight: 600;
     color: #e0e0e0;
     letter-spacing: 0.3px;
@@ -192,7 +197,6 @@ header {
     line-height: 1.2;
 }
 
-/* Status Text (Middle) */
 .status-text {
     font-size: 11px;
     font-weight: bold;
@@ -210,20 +214,9 @@ header {
     box-shadow: 0 5px 15px rgba(0, 230, 118, 0.3);
     transform: translateY(-2px);
 }
-
-.device-card.on .device-name {
-    color: #000;
-    font-weight: 700;
-}
-
-.device-card.on .status-text {
-    color: #004d40;
-    background: rgba(255, 255, 255, 0.4);
-}
-
-.device-card:active {
-    transform: scale(0.96);
-}
+.device-card.on .device-name { color: #000; font-weight: 700; }
+.device-card.on .status-text { color: #004d40; background: rgba(255, 255, 255, 0.4); }
+.device-card:active { transform: scale(0.96); }
 
 /* --- MASTER BUTTON STYLES --- */
 .master-row {
@@ -232,7 +225,6 @@ header {
     margin-top: 10px;
     margin-bottom: 30px;
 }
-
 .master-btn-style {
     width: 50%;
     min-width: 160px;
@@ -263,27 +255,24 @@ input, select {
     cursor: pointer;
     margin-top: 10px;
 }
-.logout-btn { background: #e53935; margin-top: 30px; }
+.logout-btn { background: #e53935; margin-top: 30px; margin-bottom: 20px; }
 
 .section-title { margin-top: 0; color: #888; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
 
-/* --- MODERN FLOATING BOTTOM NAV (Like the Image) --- */
-
+/* --- MODERN FLOATING BOTTOM NAV --- */
 .bottom-nav {
     position: fixed;
-    bottom: 20px; /* Floating from bottom */
+    bottom: 20px; 
     left: 50%;
     transform: translateX(-50%);
     width: 90%; 
     max-width: 400px;
-    
-    background: #111111; /* Dark Background */
+    background: #111111;
     display: flex;
     justify-content: space-around;
     align-items: center;
-    
     padding: 10px 15px;
-    border-radius: 25px; /* Pill Shape */
+    border-radius: 25px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     border: 1px solid #333;
     z-index: 1000;
@@ -294,32 +283,14 @@ input, select {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    
     color: #777;
     cursor: pointer;
     transition: all 0.3s ease;
-    
     padding: 8px 20px;
     border-radius: 15px;
 }
 
-.nav-item i { 
-    font-size: 22px; /* Bigger Icons */
-    margin-bottom: 5px; 
-    display: block;
-}
-
-.nav-item span { 
-    font-size: 13px; /* Bigger Text */
-    font-weight: 500;
-}
-
-/* Active Tab Style */
-.nav-item.active { 
-    color: #00e676; /* Green Text */
-    background: rgba(0, 230, 118, 0.15); /* Soft Green Pill BG */
-}
-
-.nav-item.active i {
-    transform: translateY(0);
-}
+.nav-item i { font-size: 22px; margin-bottom: 5px; display: block; }
+.nav-item span { font-size: 13px; font-weight: 500; }
+.nav-item.active { color: #00e676; background: rgba(0, 230, 118, 0.15); }
+.nav-item.active i { transform: translateY(0); }
