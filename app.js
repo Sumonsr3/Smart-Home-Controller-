@@ -47,7 +47,7 @@ const gpioLabels = {};
 // সব কি (Key) একসাথে প্রসেস করা (1-6 + Master)
 const allKeys = [...gpioList, "master"];
 
-// বাটনগুলো খুঁজে বের করা
+// বাটনগুলো খুঁজে বের করা এবং অবজেক্টে রাখা
 allKeys.forEach(key => {
   const btn = document.getElementById(key + "Btn");
   const lbl = document.getElementById(key + "Status");
@@ -55,8 +55,6 @@ allKeys.forEach(key => {
   if (btn && lbl) {
     gpioButtons[key] = btn;
     gpioLabels[key] = lbl;
-  } else {
-    console.warn("Element not found for:", key);
   }
 });
 
@@ -100,32 +98,44 @@ function startListeners() {
   allKeys.forEach((key) => {
     onValue(ref(db, "/" + key), (snapshot) => {
       let value = snapshot.val();
-      // যদি ডাটা না থাকে (null), তাহলে 0 ধরবো
       if (value === null) value = 0; 
       updateUI(key, value);
     });
   });
 
-  // ২. বাটনে ক্লিক করলে ডাটাবেসে রাইট করা
+  // ২. বাটনে ক্লিক ইভেন্ট
   Object.keys(gpioButtons).forEach((key) => {
     let btn = gpioButtons[key];
     
     btn.onclick = () => {
-      // বর্তমানে অন থাকলে অফ করবো, অফ থাকলে অন
-      let newState = btn.classList.contains("on") ? 0 : 1;
-
+      
       if (key === "master") {
-        console.log("Master Switch Clicked:", newState);
-        // মাস্টার সুইচ: নিজের এবং বাকি সবগুলোর ভ্যালু আপডেট করবে
-        set(ref(db, "/master"), newState);
+        // --- Smart Master Logic ---
         
+        // প্রথমে চেক করি কোনো একটি লাইট অন আছে কিনা
+        let isAnyOn = false;
+        gpioList.forEach(gpioName => {
+          // আমরা UI ক্লাস চেক করে দেখছি বাটনটি বর্তমানে ON কিনা
+          if (gpioButtons[gpioName].classList.contains("on")) {
+            isAnyOn = true;
+          }
+        });
+
+        // লজিক: যদি একটাও অন থাকে, তবে সব অফ হবে (0)। 
+        // আর যদি সব অফ থাকে, তবে সব অন হবে (1)।
+        let targetState = isAnyOn ? 0 : 1;
+
+        console.log("Master Action -> Set All to:", targetState);
+
+        // ডাটাবেসে আপডেট পাঠানো
+        set(ref(db, "/master"), targetState);
         gpioList.forEach(gpio => {
-          set(ref(db, "/" + gpio), newState);
+          set(ref(db, "/" + gpio), targetState);
         });
 
       } else {
-        console.log(key, "Clicked:", newState);
-        // সাধারণ সুইচ: শুধু নিজের ভ্যালু আপডেট করবে
+        // --- সাধারণ সুইচের কাজ ---
+        let newState = btn.classList.contains("on") ? 0 : 1;
         set(ref(db, "/" + key), newState);
       }
     };
@@ -142,7 +152,7 @@ function updateUI(key, val) {
   if (val === 1) {
     btn.classList.add("on");
     lab.textContent = "Status: ON";
-    // মাস্টারের জন্য টেক্সট কালার কালো, বাকিদের জন্য সবুজ
+    // মাস্টারের কালার একটু আলাদা, বাকিরা সবুজ
     lab.style.color = (key === 'master') ? "#ffea00" : "#9effae"; 
   } else {
     btn.classList.remove("on");
