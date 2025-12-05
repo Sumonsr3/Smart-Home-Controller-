@@ -68,6 +68,34 @@
   </div>
 </div>
 
+<div id="nameModal" class="modal-overlay" style="display:none;">
+  <div class="modal-box">
+    <i class="fas fa-edit" style="font-size: 40px; color: #4caf50; margin-bottom:15px;"></i>
+    <h3>Rename Switch</h3>
+    
+    <div class="time-inputs" style="text-align:left; margin-top:20px;">
+      <label>Select Device to Rename:</label>
+      <select id="nameModalDeviceSelect">
+        <option value="" disabled selected>Choose a device...</option>
+        <option value="gpio1">Light 1</option>
+        <option value="gpio2">Light 2</option>
+        <option value="gpio3">Light 3</option>
+        <option value="gpio4">Light 4</option>
+        <option value="gpio5">Light 5</option>
+        <option value="gpio6">Light 6</option>
+      </select>
+
+      <label>Enter New Name:</label>
+      <input type="text" id="nameModalInput" placeholder="e.g. Bedroom Light">
+    </div>
+
+    <div class="modal-buttons" style="margin-top:20px;">
+      <button id="cancelNameModalBtn" class="btn-cancel">Cancel</button>
+      <button id="saveNameModalBtn" class="btn-confirm" style="background:#4caf50; color:white;">Save</button>
+    </div>
+  </div>
+</div>
+
 <div id="appContainer" style="display:none;">
   
   <header>
@@ -83,37 +111,12 @@
       <h4 class="section-title">Rooms & Devices</h4>
       
       <div class="grid-container">
-        
-        <div id="gpio1Btn" class="device-card">
-          <span id="label_gpio1" class="device-name">Light 1</span>
-          <span id="status_gpio1" class="status-text">OFF</span>
-        </div>
-
-        <div id="gpio2Btn" class="device-card">
-          <span id="label_gpio2" class="device-name">Light 2</span>
-          <span id="status_gpio2" class="status-text">OFF</span>
-        </div>
-
-        <div id="gpio3Btn" class="device-card">
-          <span id="label_gpio3" class="device-name">Light 3</span>
-          <span id="status_gpio3" class="status-text">OFF</span>
-        </div>
-
-        <div id="gpio4Btn" class="device-card">
-          <span id="label_gpio4" class="device-name">Light 4</span>
-          <span id="status_gpio4" class="status-text">OFF</span>
-        </div>
-
-        <div id="gpio5Btn" class="device-card">
-          <span id="label_gpio5" class="device-name">Light 5</span>
-          <span id="status_gpio5" class="status-text">OFF</span>
-        </div>
-
-        <div id="gpio6Btn" class="device-card">
-          <span id="label_gpio6" class="device-name">Light 6</span>
-          <span id="status_gpio6" class="status-text">OFF</span>
-        </div>
-
+        <div id="gpio1Btn" class="device-card"><span id="label_gpio1" class="device-name">Light 1</span><span id="status_gpio1" class="status-text">OFF</span></div>
+        <div id="gpio2Btn" class="device-card"><span id="label_gpio2" class="device-name">Light 2</span><span id="status_gpio2" class="status-text">OFF</span></div>
+        <div id="gpio3Btn" class="device-card"><span id="label_gpio3" class="device-name">Light 3</span><span id="status_gpio3" class="status-text">OFF</span></div>
+        <div id="gpio4Btn" class="device-card"><span id="label_gpio4" class="device-name">Light 4</span><span id="status_gpio4" class="status-text">OFF</span></div>
+        <div id="gpio5Btn" class="device-card"><span id="label_gpio5" class="device-name">Light 5</span><span id="status_gpio5" class="status-text">OFF</span></div>
+        <div id="gpio6Btn" class="device-card"><span id="label_gpio6" class="device-name">Light 6</span><span id="status_gpio6" class="status-text">OFF</span></div>
       </div>
 
       <div class="master-row">
@@ -122,52 +125,33 @@
             <span class="status-text">OFF</span>
         </div>
       </div>
-
     </div>
 
     <div id="timerPage" class="page-section" style="display:none;">
       <button id="openTimerModalBtn" class="btn-add-timer">
         <i class="fas fa-plus-circle"></i> Set New Timer
       </button>
-
       <h4 class="section-title" style="margin-top:20px;">Active Schedules</h4>
-      
       <div id="activeTimerList" class="timer-list">
         <p style="text-align:center; color:#555; margin-top:20px;">No active timers.</p>
       </div>
     </div>
 
     <div id="settingsPage" class="page-section" style="display:none;">
-      <div class="card">
-        <h3><i class="fas fa-edit"></i> Edit Names</h3>
-        <div class="edit-list">
-          <input type="text" id="edit_gpio1" placeholder="Name for Switch 1">
-          <input type="text" id="edit_gpio2" placeholder="Name for Switch 2">
-          <input type="text" id="edit_gpio3" placeholder="Name for Switch 3">
-          <input type="text" id="edit_gpio4" placeholder="Name for Switch 4">
-          <input type="text" id="edit_gpio5" placeholder="Name for Switch 5">
-          <input type="text" id="edit_gpio6" placeholder="Name for Switch 6">
-        </div>
-        <button id="saveNamesBtn" class="btn" style="background:#4caf50;">Save Names</button>
-      </div>
+      
+      <button id="openNameModalBtn" class="btn-add-timer" style="background: linear-gradient(135deg, #2196f3, #21cbf3); color: white;">
+        <i class="fas fa-edit"></i> Set Switch Name
+      </button>
+
       <button id="logoutBtn" class="btn logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
     </div>
 
   </main>
 
   <nav class="bottom-nav">
-    <div class="nav-item active" onclick="switchTab('home')">
-      <i class="fas fa-home"></i> 
-      <span>Home</span>
-    </div>
-    <div class="nav-item" onclick="switchTab('timer')">
-      <i class="fas fa-stopwatch"></i> 
-      <span>Timer</span>
-    </div>
-    <div class="nav-item" onclick="switchTab('settings')">
-      <i class="fas fa-cog"></i> 
-      <span>Settings</span>
-    </div>
+    <div class="nav-item active" onclick="switchTab('home')"><i class="fas fa-home"></i> <span>Home</span></div>
+    <div class="nav-item" onclick="switchTab('timer')"><i class="fas fa-stopwatch"></i> <span>Timer</span></div>
+    <div class="nav-item" onclick="switchTab('settings')"><i class="fas fa-cog"></i> <span>Settings</span></div>
   </nav>
 
 </div>
@@ -183,7 +167,6 @@
 
     document.getElementById(tabName + 'Page').style.display = 'block';
     
-    // Tab Activation Logic
     if(tabName === 'home') navItems[0].classList.add('active');
     if(tabName === 'timer') navItems[1].classList.add('active');
     if(tabName === 'settings') navItems[2].classList.add('active');
