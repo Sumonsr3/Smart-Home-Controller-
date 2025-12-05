@@ -1,7 +1,8 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+import { getDatabase, ref, set, onValue, remove } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
+// --- কনফিগারেশন ---
 // Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyAzOuFlqKueEdbPPH83moT9wFgidm8TVBM",
@@ -12,35 +13,46 @@ const firebaseConfig = {
   messagingSenderId: "471259029586",
   appId: "1:471259029586:web:6f489f0e3b229593523f8b"
 };
-// --- কনফিগারেশন শেষ ---
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth();
 const db = getDatabase(app);
 
-// Elements
+// Global Vars
+const gpioList = ["gpio1", "gpio2", "gpio3", "gpio4", "gpio5", "gpio6"];
+let currentDeviceNames = {}; // Store names to show in timer list
+
+// UI Elements
 const authContainer = document.getElementById("authContainer");
 const appContainer = document.getElementById("appContainer");
 const loginBtn = document.getElementById("loginBtn");
 const logoutBtn = document.getElementById("logoutBtn");
 const authMsg = document.getElementById("authMsg");
 const badge = document.getElementById("statusBadge");
-const saveNamesBtn = document.getElementById("saveNamesBtn");
-const saveTimerBtn = document.getElementById("saveTimerBtn");
 
-const gpioList = ["gpio1", "gpio2", "gpio3", "gpio4", "gpio5", "gpio6"];
+// Modal Elements
+const confirmModal = document.getElementById("confirmModal");
+const timerModal = document.getElementById("timerModal");
+const modalDeviceSelect = document.getElementById("modalDeviceSelect");
+const modalTimeOn = document.getElementById("modalTimeOn");
+const modalTimeOff = document.getElementById("modalTimeOff");
+const activeTimerList = document.getElementById("activeTimerList");
+
+// Initialize Elements
 const gpioButtons = {};
-const gpioLabels = {}; // For the device Name text (e.g. "Kitchen Light")
+const gpioLabels = {};
+const gpioStatusText = {}; 
 
-// Initialize Buttons and Label Elements
 [...gpioList, "master"].forEach(key => {
   gpioButtons[key] = document.getElementById(key + "Btn");
 });
+
 gpioList.forEach(key => {
   gpioLabels[key] = document.getElementById("label_" + key);
+  gpioStatusText[key] = document.getElementById("status_" + key);
 });
 
-// --- Auth Logic ---
+// --- Auth ---
 loginBtn.onclick = async () => {
   authMsg.textContent = "Please wait...";
   try {
@@ -73,76 +85,155 @@ onAuthStateChanged(auth, (user) => {
 
 function startApp() {
   
-  // 1. Listen for GPIO Status (ON/OFF)
+  // 1. Listen for GPIO Status
   [...gpioList, "master"].forEach((key) => {
     onValue(ref(db, "/" + key), (snapshot) => {
       let val = snapshot.val() || 0;
       let btn = gpioButtons[key];
+      let txt = gpioStatusText[key];
+
       if(btn) {
-        if(val === 1) btn.classList.add("on");
-        else btn.classList.remove("on");
+        if(val === 1) {
+            btn.classList.add("on");
+            if(txt) { txt.textContent = "ON"; txt.style.color = "#00e676"; }
+        } else {
+            btn.classList.remove("on");
+            if(txt) { txt.textContent = "OFF"; txt.style.color = "#888"; }
+        }
       }
     });
   });
 
-  // 2. Listen for Device Names (Labels)
+  // 2. Listen for Names (Sync everywhere)
   gpioList.forEach(key => {
     onValue(ref(db, "/config/names/" + key), (snapshot) => {
       let name = snapshot.val();
       if(name) {
-        // Update Home Page Label
+        // Update Home Label
         if(gpioLabels[key]) gpioLabels[key].textContent = name;
         // Update Settings Input
         let input = document.getElementById("edit_" + key);
         if(input) input.value = name;
+        // Update Global Name Store
+        currentDeviceNames[key] = name;
+        // Update Dropdown Option Text
+        let option = modalDeviceSelect.querySelector(`option[value="${key}"]`);
+        if(option) option.textContent = name;
+      } else {
+        // Default Names
+        currentDeviceNames[key] = "Light " + key.replace("gpio", "");
       }
     });
   });
 
-  // 3. Button Click Logic (Toggle)
-  Object.keys(gpioButtons).forEach((key) => {
-    let btn = gpioButtons[key];
-    btn.onclick = () => {
-      if (key === "master") {
-        // Smart Master Logic: If any is ON, turn all OFF. Else turn all ON.
-        let isAnyOn = false;
-        gpioList.forEach(g => {
-           if(gpioButtons[g].classList.contains("on")) isAnyOn = true;
-        });
-        let target = isAnyOn ? 0 : 1;
-        set(ref(db, "/master"), target);
-        gpioList.forEach(g => set(ref(db, "/" + g), target));
-      } else {
-        // Normal Toggle
-        let newState = btn.classList.contains("on") ? 0 : 1;
-        set(ref(db, "/" + key), newState);
-      }
-    };
-  });
-}
-
-// --- SAVE NAMES (Settings Page) ---
-saveNamesBtn.onclick = () => {
-  gpioList.forEach(key => {
-    let newName = document.getElementById("edit_" + key).value;
-    if(newName) {
-      set(ref(db, "/config/names/" + key), newName);
+  // 3. LISTEN FOR TIMERS (Build the List Dynamically)
+  onValue(ref(db, "/timers"), (snapshot) => {
+    activeTimerList.innerHTML = ""; // Clear list first
+    const timers = snapshot.val();
+    
+    if (timers) {
+      Object.keys(timers).forEach(key => {
+        let data = timers[key];
+        // Create List Item
+        let div = document.createElement("div");
+        div.className = "timer-card-item";
+        
+        let devName = currentDeviceNames[key] || key;
+        let schedule = "";
+        if(data.on && data.off) schedule = `ON: ${data.on} <br> OFF: ${data.off}`;
+        else if(data.on) schedule = `ON: ${data.on}`;
+        else if(data.off) schedule = `OFF: ${data.off}`;
+        
+        div.innerHTML = `
+          <div class="t-info">
+            <span class="t-dev-name">${devName}</span>
+            <div class="t-time-val">${schedule}</div>
+          </div>
+          <button class="btn-delete-timer" onclick="deleteTimer('${key}')">
+            <i class="fas fa-trash"></i>
+          </button>
+        `;
+        activeTimerList.appendChild(div);
+      });
+    } else {
+      activeTimerList.innerHTML = `<p style="text-align:center; color:#555; margin-top:20px;">No active timers.</p>`;
     }
   });
-  alert("Names Saved!");
+
+  // 4. Button Logic
+  gpioList.forEach((key) => {
+    document.getElementById(key + "Btn").onclick = () => {
+      let btn = gpioButtons[key];
+      let newState = btn.classList.contains("on") ? 0 : 1;
+      set(ref(db, "/" + key), newState);
+    };
+  });
+
+  // Master Button
+  document.getElementById("masterBtn").onclick = () => {
+    confirmModal.style.display = "flex";
+  };
+  document.getElementById("cancelMasterBtn").onclick = () => {
+    confirmModal.style.display = "none";
+  };
+  document.getElementById("confirmMasterBtn").onclick = () => {
+    let isAnyOn = false;
+    gpioList.forEach(g => {
+       if(gpioButtons[g].classList.contains("on")) isAnyOn = true;
+    });
+    let target = isAnyOn ? 0 : 1;
+    set(ref(db, "/master"), target);
+    gpioList.forEach(g => set(ref(db, "/" + g), target));
+    confirmModal.style.display = "none";
+  };
+}
+
+// --- TIMER MODAL LOGIC (New Button) ---
+const openTimerModalBtn = document.getElementById("openTimerModalBtn");
+
+openTimerModalBtn.onclick = () => {
+    // Reset fields
+    modalDeviceSelect.value = "";
+    modalTimeOn.value = "";
+    modalTimeOff.value = "";
+    timerModal.style.display = "flex";
 };
 
-// --- SAVE TIMER (Timer Page) ---
-saveTimerBtn.onclick = () => {
-  let device = document.getElementById("timerDeviceSelect").value;
-  let onTime = document.getElementById("timeOn").value;
-  let offTime = document.getElementById("timeOff").value;
+document.getElementById("cancelTimerBtn").onclick = () => {
+    timerModal.style.display = "none";
+};
 
-  if(device) {
-    set(ref(db, "/timers/" + device), {
-      on: onTime,
-      off: offTime
-    });
-    alert("Timer saved for " + device);
+document.getElementById("saveTimerBtn").onclick = () => {
+    let selectedDevice = modalDeviceSelect.value;
+    let tOn = modalTimeOn.value;
+    let tOff = modalTimeOff.value;
+
+    if(!selectedDevice) {
+        alert("Please select a device!");
+        return;
+    }
+    
+    if(tOn || tOff) {
+        set(ref(db, "/timers/" + selectedDevice), {
+            on: tOn,
+            off: tOff
+        });
+    }
+    timerModal.style.display = "none";
+};
+
+// Global Function to delete timer (called from HTML)
+window.deleteTimer = function(key) {
+  if(confirm("Delete schedule for this device?")) {
+    remove(ref(db, "/timers/" + key));
   }
+}
+
+// Save Names Logic
+document.getElementById("saveNamesBtn").onclick = () => {
+  gpioList.forEach(key => {
+    let newName = document.getElementById("edit_" + key).value;
+    if(newName) set(ref(db, "/config/names/" + key), newName);
+  });
+  alert("Names Saved!");
 };
