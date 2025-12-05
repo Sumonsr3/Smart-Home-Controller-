@@ -4,13 +4,13 @@ import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebase
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyDxkigmr_aFKfkcA40tYxkJ7uNFxtmg34s",
-  authDomain: "smart-home-control-85131.firebaseapp.com",
-  databaseURL: "https://smart-home-control-85131-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "smart-home-control-85131",
-  storageBucket: "smart-home-control-85131.firebasestorage.app",
-  messagingSenderId: "1088125775954",
-  appId: "1:1088125775954:web:743b9899cbcb7011966f8b"
+  apiKey: "AIzaSyAzOuFlqKueEdbPPH83moT9wFgidm8TVBM",
+  authDomain: "smart-home-controller-b3004.firebaseapp.com",
+  databaseURL: "https://smart-home-controller-b3004-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "smart-home-controller-b3004",
+  storageBucket: "smart-home-controller-b3004.firebasestorage.app",
+  messagingSenderId: "471259029586",
+  appId: "1:471259029586:web:6f489f0e3b229593523f8b"
 };
 
 // Initialize Firebase
@@ -335,3 +335,4 @@ function showDialog(t, m, cb) {
 }
 document.getElementById("btnCancel").onclick = () => modal.classList.remove("active");
 document.getElementById("btnConfirm").onclick = () => { if (onConfirm) onConfirm(); modal.classList.remove("active"); };
+
