@@ -1,13 +1,13 @@
-/* Base Setup */
+/* --- GLOBAL SETUP & FONTS --- */
 body {
     margin: 0;
     padding: 0;
-    background-color: #121212;
-    font-family: 'Segoe UI', sans-serif;
+    background-color: #121216; /* ছবির মতো ডার্ক ব্যাকগ্রাউন্ড */
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     color: white;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
-    overflow: hidden; /* পুরো পেজের স্ক্রল বন্ধ (ফিক্সড লুকের জন্য) */
+    overflow-x: hidden;
 }
 
 .full-screen-center {
@@ -15,18 +15,17 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+    background: #121216;
 }
 
-/* --- SLIM HEADER --- */
+/* --- HEADER STYLES (IMAGE 2 STYLE) --- */
 header {
-    padding: 10px 0;
-    height: 50px;
+    padding: 30px 20px 20px 20px;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
-    background: #1e1e1e;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    justify-content: center;
+    background: transparent;
     position: sticky;
     top: 0;
     z-index: 100;
@@ -34,283 +33,134 @@ header {
 
 .header-content {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     align-items: center;
     gap: 10px;
+    width: 100%;
 }
 
 .header-content h2 { 
     margin: 0; 
-    font-size: 18px; 
+    font-size: 32px; /* বড় ফন্ট */
+    font-weight: 700;
     color: white;
-}
-
-.status-badge {
-    padding: 3px 10px;
-    border-radius: 12px;
-    font-size: 10px;
-    font-weight: bold;
     letter-spacing: 0.5px;
-    text-transform: uppercase;
 }
 
-.online { background: #00c853; color: white; box-shadow: 0 0 8px rgba(0, 200, 83, 0.4); }
-.offline { background: #e53935; color: white; box-shadow: 0 0 8px rgba(229, 57, 53, 0.4); }
+/* SYSTEM ONLINE BADGE (OUTLINED) */
+.status-badge {
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border: 1px solid #34c759; /* গ্রিন বর্ডার */
+    background: rgba(52, 199, 89, 0.1); /* হালকা গ্রিন ব্যাকগ্রাউন্ড */
+    color: #34c759;
+}
+
+.status-badge.offline {
+    border-color: #ff453a;
+    background: rgba(255, 69, 58, 0.1);
+    color: #ff453a;
+}
 
 #mainContent {
-    padding: 15px;
-    /* নিচের মেনুর হাইট অনুযায়ী প্যাডিং */
-    padding-bottom: 80px; 
-}
-
-/* --- FIXED PAGE LAYOUTS --- */
-/* সব পেজ সেকশনের জন্য কমন স্টাইল */
-.page-section {
-    display: flex;
-    flex-direction: column;
-    /* স্ক্রিনের উচ্চতা অনুযায়ী হাইট সেট করা */
-    height: calc(100vh - 150px); 
-    justify-content: space-between; /* কন্টেন্ট উপরে এবং বাটন নিচে */
-    overflow-y: auto; /* কনটেন্ট বেশি হলে শুধু মাঝখানে স্ক্রল হবে */
-}
-
-/* --- SETTINGS & HOME PAGE SPECIFIC --- */
-.settings-content, .home-content-wrapper {
-    flex-grow: 1; /* মাঝখানের জায়গা দখল করবে */
-}
-
-/* --- MODAL STYLES --- */
-.modal-overlay {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.8);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 2000;
-    backdrop-filter: blur(5px);
-}
-
-.modal-box {
-    background: #1e1e1e;
-    padding: 25px;
-    border-radius: 15px;
-    width: 280px;
-    text-align: center;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-    border: 1px solid #333;
-}
-
-.modal-box h3 { margin: 10px 0; color: white; }
-.modal-box p { color: #aaa; margin-bottom: 20px; font-size: 13px; }
-
-.modal-buttons {
-    display: flex;
-    justify-content: space-between;
-    gap: 15px;
-}
-
-.btn-confirm, .btn-cancel {
-    flex: 1;
-    padding: 8px;
-    border: none;
-    border-radius: 6px;
-    font-weight: bold;
-    cursor: pointer;
-    font-size: 13px;
-}
-.btn-confirm { background: #00e676; color: #000; }
-.btn-cancel { background: #e53935; color: white; }
-
-/* --- BUTTONS --- */
-.btn-add-timer {
-    width: 100%;
-    padding: 15px;
-    border: none;
-    border-radius: 10px;
-    background: linear-gradient(135deg, #00c853, #b2ff59);
-    color: #000;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    box-shadow: 0 4px 10px rgba(0, 200, 83, 0.3);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-}
-.btn-add-timer:active { transform: scale(0.98); }
-
-/* --- TIMER LIST --- */
-.timer-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding-bottom: 10px;
-}
-
-.timer-card-item {
-    background: #252525;
-    padding: 12px;
-    border-radius: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-left: 4px solid #03a9f4;
-}
-
-.t-info { text-align: left; }
-.t-dev-name { display: block; font-size: 15px; font-weight: 600; color: white; }
-.t-time-val { font-size: 12px; color: #aaa; margin-top: 3px; }
-
-.btn-delete-timer {
-    background: #e53935;
-    color: white;
-    border: none;
-    padding: 6px 10px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 12px;
-}
-
-/* Card Style */
-.card {
-    background: #1e1e1e;
-    border-radius: 15px;
     padding: 20px;
-    text-align: center;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    margin-bottom: 20px;
+    padding-bottom: 110px; /* মেনু বারের জন্য জায়গা */
 }
 
-/* --- GRID & DEVICES --- */
+/* --- DEVICE CARDS (IMAGE 2 STYLE) --- */
 .grid-container {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 10px;
+    grid-template-columns: 1fr 1fr; /* দুই কলাম */
+    gap: 15px;
+    margin-bottom: 25px;
 }
 
 .device-card {
-    background: #252525;
-    padding: 8px;
-    border-radius: 10px;
-    height: 65px;
+    background: #1c1c21; /* কার্ডের কালার */
+    border-radius: 18px; /* বেশি রাউন্ডেড কর্নার */
+    height: 110px; /* হাইট বাড়ানো হয়েছে */
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 5px; 
+    gap: 8px; 
     cursor: pointer;
-    box-shadow: 0 3px 5px rgba(0,0,0,0.2);
-    border: 1px solid #333;
-    transition: all 0.2s;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
+    border: 1px solid rgba(255,255,255,0.05);
 }
 
 .device-name {
-    font-size: 14px;
+    font-size: 17px;
     font-weight: 600;
-    color: #e0e0e0;
+    color: #ffffff;
     text-align: center;
+    letter-spacing: 0.3px;
 }
 
 .status-text {
-    font-size: 10px;
-    font-weight: bold;
+    font-size: 11px;
+    font-weight: 500;
     text-transform: uppercase;
-    background: rgba(255, 255, 255, 0.1);
-    padding: 2px 8px;
-    border-radius: 8px;
-    color: #888;
+    color: #8e8e93; /* গ্রে কালার */
+    letter-spacing: 0.5px;
 }
 
+/* --- ACTIVE STATE (ON) --- */
 .device-card.on {
-    background: #00e676;
-    border-color: #00e676;
-    box-shadow: 0 4px 10px rgba(0, 230, 118, 0.3);
+    background: #ffffff; /* অন হলে সাদা (Apple HomeKit Style) */
     transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(255, 255, 255, 0.2);
 }
-.device-card.on .device-name { color: #000; font-weight: 700; }
-.device-card.on .status-text { color: #004d40; background: rgba(255, 255, 255, 0.4); }
-.device-card:active { transform: scale(0.96); }
 
-/* --- MASTER SWITCH RED --- */
+.device-card.on .device-name { color: #000; }
+.device-card.on .status-text { color: #555; font-weight: bold; }
+
+/* --- MASTER SWITCH (RED STYLE UPDATED) --- */
 .master-row {
-    margin-top: auto; /* এটি বাটনকে নিচে ঠেলে দেবে */
+    margin-top: 10px;
     display: flex;
     justify-content: center;
-    padding-bottom: 10px;
 }
 .master-btn-style {
-    width: 60%;
-    min-width: 150px;
-    height: 65px;
-    border: 2px solid #ff5252;
-    background: rgba(255, 82, 82, 0.1);
+    width: 100%; /* ফুল উইডথ */
+    height: 70px;
+    border: 1px solid #ff453a;
+    background: rgba(255, 69, 58, 0.05);
 }
+.master-btn-style .device-name { color: #ff453a; }
 
 #masterBtn.on {
-    background: #d50000 !important;
-    border-color: #d50000 !important;
-    box-shadow: 0 5px 15px rgba(213, 0, 0, 0.5) !important;
+    background: #ff453a !important;
+    border-color: #ff453a !important;
 }
 #masterBtn.on .device-name { color: white !important; }
-#masterBtn.on .status-text { color: #ffcdd2 !important; background: rgba(0, 0, 0, 0.3) !important; }
+#masterBtn.on .status-text { color: rgba(255,255,255,0.8) !important; }
 
-/* Inputs */
-input, select {
-    width: 100%;
-    padding: 10px;
-    margin: 6px 0;
-    border-radius: 8px;
-    border: 1px solid #444;
-    background: #333;
-    color: white;
-    box-sizing: border-box;
-}
 
-.btn {
-    width: 100%;
-    padding: 10px;
-    border-radius: 8px;
-    border: none;
-    background: #03a9f4;
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-    margin-top: 10px;
-}
-
-/* Logout Button */
-.logout-btn { 
-    background: #e53935; 
-    margin-top: auto; 
-    margin-bottom: 20px;
-    box-shadow: 0 4px 10px rgba(229, 57, 53, 0.3);
-}
-
-.section-title { margin-top: 0; color: #888; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
-
-/* --- SLIM BOTTOM NAV --- */
+/* --- BOTTOM NAV (IMAGE 1 STYLE) --- */
 .bottom-nav {
     position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    max-width: 100%;
+    bottom: 25px; /* ফ্লোটিং লুক */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 400px;
     
-    background: #111111;
+    background: #000000; /* পিওর ব্ল্যাক */
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
     align-items: center;
     
-    padding: 10px 10px 20px 10px; 
-    border-radius: 20px 20px 0 0;
-    
-    box-shadow: 0 -4px 15px rgba(0,0,0,0.4);
-    border-top: 1px solid #222;
+    padding: 8px 10px;
+    border-radius: 35px; /* পিল শেপ */
+    border: 1px solid #333;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     z-index: 1000;
 }
 
@@ -319,21 +169,95 @@ input, select {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    color: #666;
+    color: #8e8e93;
     cursor: pointer;
     transition: all 0.3s ease;
-    padding: 5px 15px;
-    border-radius: 12px;
+    padding: 10px 20px;
+    border-radius: 25px;
+    width: 80px;
 }
 
 .nav-item i { 
-    font-size: 18px; 
-    margin-bottom: 3px; 
+    font-size: 20px; 
+    margin-bottom: 4px; 
     display: block; 
 }
 .nav-item span { 
-    font-size: 11px; 
+    font-size: 10px; 
     font-weight: 500; 
 }
-.nav-item.active { color: #00e676; background: rgba(0, 230, 118, 0.1); }
+
+/* ACTIVE NAV ITEM (Green Box Background like Image 1) */
+.nav-item.active { 
+    background-color: rgba(52, 199, 89, 0.2); /* হালকা গ্রিন বক্স */
+    color: #34c759; /* ব্রাইট গ্রিন টেক্সট */
+}
+
 .nav-item.active i { transform: translateY(0); }
+
+
+/* --- MODAL STYLES (UPDATED FOR DARK THEME) --- */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    backdrop-filter: blur(8px);
+}
+
+.modal-box {
+    background: #1c1c1e;
+    padding: 25px;
+    border-radius: 20px;
+    width: 280px;
+    text-align: center;
+    border: 1px solid #333;
+}
+
+.modal-box h3 { margin: 10px 0; color: white; font-size: 20px; }
+.modal-box p { color: #8e8e93; margin-bottom: 20px; font-size: 14px; }
+
+.btn-confirm, .btn-cancel {
+    padding: 12px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 14px;
+    margin: 5px;
+}
+.btn-confirm { background: #34c759; color: white; }
+.btn-cancel { background: #3a3a3c; color: white; }
+
+/* INPUTS */
+input, select {
+    background: #2c2c2e;
+    border: none;
+    color: white;
+    padding: 12px;
+    border-radius: 10px;
+    margin: 8px 0;
+}
+
+/* AUTH PAGE */
+.card {
+    background: #1c1c1e;
+    border-radius: 20px;
+    padding: 30px;
+    text-align: center;
+    width: 85%;
+    max-width: 350px;
+}
+.login-btn { background: #0a84ff; color: white; }
+
+/* Fixed Layout Helpers */
+.page-section {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+.logout-btn { background: #ff453a; margin-top: 20px; width: 100%; }
+.btn-add-timer { background: #34c759; color: white; border-radius: 15px; padding: 15px; margin-bottom: 20px; }
+.timer-card-item { background: #2c2c2e; border-radius: 15px; padding: 15px; border-left: 4px solid #34c759; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
