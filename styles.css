@@ -61,7 +61,7 @@ body {
 .btn-confirm { background: #00e676; color: #000; }
 .btn-cancel { background: #e53935; color: white; }
 
-/* --- NEW BUTTON STYLE (Add Timer) --- */
+/* --- BUTTONS --- */
 .btn-add-timer {
     width: 100%;
     padding: 18px;
@@ -138,10 +138,11 @@ header {
 
 #mainContent {
     padding: 20px;
-    padding-bottom: 90px;
+    /* Bottom padding increased so floating nav doesn't hide content */
+    padding-bottom: 120px; 
 }
 
-/* Common Card Style (Used in Login & Settings) */
+/* Common Card Style */
 .card {
     background: #1e1e1e;
     border-radius: 15px;
@@ -151,27 +152,27 @@ header {
     margin-bottom: 20px;
 }
 
-/* --- DEVICE GRID & CARD STYLES --- */
+/* --- DEVICE GRID & COMPACT CARD STYLES --- */
 
 .grid-container {
     display: grid;
     grid-template-columns: 1fr 1fr; /* Two Columns */
-    gap: 15px;
+    gap: 12px; /* Tighter gap */
     margin-bottom: 25px;
 }
 
-/* The Switch Card */
+/* The Compact Switch Card */
 .device-card {
     background: #252525;
-    padding: 15px;
+    padding: 10px;
     border-radius: 12px;
-    height: 90px; /* Fixed compact height */
+    height: 70px; /* Reduced Compact Height */
     
     display: flex;
-    flex-direction: column; /* Vertical Layout */
-    justify-content: center; /* Center Vertically */
-    align-items: center; /* Center Horizontally */
-    gap: 10px; /* Gap between Name and Status */
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 6px; /* Reduced gap */
     
     cursor: pointer;
     box-shadow: 0 4px 6px rgba(0,0,0,0.2);
@@ -183,40 +184,41 @@ header {
 
 /* Device Name (Top) */
 .device-name {
-    font-size: 16px;
+    font-size: 15px; /* Slightly smaller font */
     font-weight: 600;
     color: #e0e0e0;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.3px;
     text-align: center;
+    line-height: 1.2;
 }
 
-/* Status Text (Middle/Center) */
+/* Status Text (Middle) */
 .status-text {
-    font-size: 13px;
+    font-size: 11px;
     font-weight: bold;
     text-transform: uppercase;
     background: rgba(255, 255, 255, 0.1);
-    padding: 4px 12px;
-    border-radius: 20px;
+    padding: 3px 10px;
+    border-radius: 10px;
     color: #888;
 }
 
 /* --- ACTIVE (ON) STATE --- */
 .device-card.on {
-    background: #00e676; /* Bright Green Background */
+    background: #00e676; /* Bright Green */
     border-color: #00e676;
-    box-shadow: 0 8px 20px rgba(0, 230, 118, 0.4);
+    box-shadow: 0 5px 15px rgba(0, 230, 118, 0.3);
     transform: translateY(-2px);
 }
 
 .device-card.on .device-name {
-    color: #000; /* Black text on green */
+    color: #000;
     font-weight: 700;
 }
 
 .device-card.on .status-text {
-    color: #004d40; /* Dark Green Text */
-    background: rgba(255, 255, 255, 0.4); /* Semi-transparent white bg */
+    color: #004d40;
+    background: rgba(255, 255, 255, 0.4);
 }
 
 .device-card:active {
@@ -233,11 +235,12 @@ header {
 
 .master-btn-style {
     width: 50%;
-    min-width: 160px; /* Minimum width for small screens */
+    min-width: 160px;
+    height: 70px;
     border: 2px solid #444;
 }
 
-/* Input & Button Styles (Login/Settings) */
+/* Inputs & Forms */
 input, select {
     width: 100%;
     padding: 12px;
@@ -262,26 +265,61 @@ input, select {
 }
 .logout-btn { background: #e53935; margin-top: 30px; }
 
-/* Bottom Navigation */
+.section-title { margin-top: 0; color: #888; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
+
+/* --- MODERN FLOATING BOTTOM NAV (Like the Image) --- */
+
 .bottom-nav {
     position: fixed;
-    bottom: 0;
-    width: 100%;
-    background: #1e1e1e;
+    bottom: 20px; /* Floating from bottom */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%; 
+    max-width: 400px;
+    
+    background: #111111; /* Dark Background */
     display: flex;
     justify-content: space-around;
-    padding: 12px 0;
-    box-shadow: 0 -2px 10px rgba(0,0,0,0.3);
+    align-items: center;
+    
+    padding: 10px 15px;
+    border-radius: 25px; /* Pill Shape */
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    border: 1px solid #333;
     z-index: 1000;
 }
+
 .nav-item {
-    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    
     color: #777;
     cursor: pointer;
-    transition: 0.2s;
+    transition: all 0.3s ease;
+    
+    padding: 8px 20px;
+    border-radius: 15px;
 }
-.nav-item i { font-size: 20px; display: block; margin-bottom: 4px; }
-.nav-item span { font-size: 10px; }
-.nav-item.active { color: #03a9f4; transform: translateY(-3px); }
 
-.section-title { margin-top: 0; color: #888; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
+.nav-item i { 
+    font-size: 22px; /* Bigger Icons */
+    margin-bottom: 5px; 
+    display: block;
+}
+
+.nav-item span { 
+    font-size: 13px; /* Bigger Text */
+    font-weight: 500;
+}
+
+/* Active Tab Style */
+.nav-item.active { 
+    color: #00e676; /* Green Text */
+    background: rgba(0, 230, 118, 0.15); /* Soft Green Pill BG */
+}
+
+.nav-item.active i {
+    transform: translateY(0);
+}
