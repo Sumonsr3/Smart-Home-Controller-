@@ -2,12 +2,12 @@
 body {
     margin: 0;
     padding: 0;
-    background-color: #121216; /* ডার্ক ব্যাকগ্রাউন্ড */
+    background-color: #121216;
     font-family: 'Segoe UI', sans-serif;
     color: white;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
-    overflow: hidden; /* স্ক্রল বন্ধ */
+    overflow: hidden;
 }
 
 .full-screen-center {
@@ -46,7 +46,6 @@ header {
     color: white;
 }
 
-/* Badge Style */
 .status-badge {
     padding: 4px 12px;
     border-radius: 20px;
@@ -64,11 +63,13 @@ header {
     background: rgba(231, 76, 60, 0.1);
 }
 
+/* --- MAIN CONTENT (FIXED SCROLLING ISSUE) --- */
 #mainContent {
     padding: 20px;
-    padding-bottom: 100px; /* নিচের মেনুর জন্য জায়গা */
-    height: calc(100vh - 100px); 
-    overflow-y: auto;
+    /* এখানে প্যাডিং বাড়ানো হয়েছে যাতে বাটন মেনুর নিচে না পড়ে */
+    padding-bottom: 160px; 
+    height: calc(100vh - 80px); 
+    overflow-y: auto; /* স্ক্রল এনাবল করা */
     box-sizing: border-box;
 }
 
@@ -76,7 +77,7 @@ header {
 .page-section {
     display: none;
     flex-direction: column;
-    height: 100%;
+    min-height: 100%; /* কন্টেন্ট কম হলেও পুরো হাইট নেবে */
 }
 .active-page {
     display: flex;
@@ -91,7 +92,7 @@ header {
 }
 
 .device-card {
-    background: #1e1e24; /* কার্ডের নরমাল কালার */
+    background: #1e1e24;
     border-radius: 16px;
     height: 100px;
     display: flex;
@@ -119,16 +120,15 @@ header {
     color: #888;
 }
 
-/* --- ON STATE (GREEN CARD) --- */
 .device-card.on {
-    background: #2ecc71 !important; /* সুইচ অন হলে সবুজ */
+    background: #2ecc71 !important;
     border-color: #2ecc71 !important;
     box-shadow: 0 5px 15px rgba(46, 204, 113, 0.4);
     transform: translateY(-2px);
 }
 
 .device-card.on .device-name {
-    color: #ffffff !important; /* অন হলে লেখা সাদা */
+    color: #ffffff !important;
     font-weight: 700;
 }
 
@@ -139,10 +139,12 @@ header {
     border-radius: 4px;
 }
 
-/* --- MASTER SWITCH (BOTTOM RED) --- */
+/* --- MASTER SWITCH (MARGIN ADDED) --- */
 .master-row {
-    margin-top: auto; /* এটি বাটনকে একদম নিচে ঠেলে দেবে */
+    margin-top: auto;
     padding-top: 20px;
+    /* নিচের মেনু থেকে নিরাপদ দূরত্ব */
+    margin-bottom: 20px; 
 }
 
 .master-btn-style {
@@ -162,10 +164,10 @@ header {
 #masterBtn.on .status-text { color: white !important; }
 
 
-/* --- ACTION BUTTONS (LEFT ALIGNED) --- */
+/* --- ACTION BUTTONS --- */
 .action-btn-row {
     display: flex;
-    justify-content: flex-start; /* বাটন বাম পাশে থাকবে */
+    justify-content: flex-start;
     margin-bottom: 20px;
 }
 
@@ -184,15 +186,12 @@ header {
     box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
-/* Green Button (Timer) */
 .btn-green { background: #2ecc71; }
-/* Blue Button (Rename) */
 .btn-blue { background: #3498db; }
-
 .btn-action:active { transform: scale(0.98); }
 
 
-/* --- BOTTOM NAVIGATION (FLOATING PILL) --- */
+/* --- BOTTOM NAV --- */
 .bottom-nav {
     position: fixed;
     bottom: 25px;
@@ -200,12 +199,10 @@ header {
     transform: translateX(-50%);
     width: 85%;
     max-width: 380px;
-    
     background: #1a1a1d; 
     display: flex;
     justify-content: space-around;
     align-items: center;
-    
     padding: 10px;
     border-radius: 40px; 
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
@@ -232,7 +229,6 @@ header {
     background-color: rgba(46, 204, 113, 0.15); 
     color: #2ecc71; 
 }
-
 
 /* --- MODALS --- */
 .modal-overlay {
@@ -270,10 +266,19 @@ input, select {
     background: #2c2c31; color: white; box-sizing: border-box;
 }
 
-/* LOGIN & TIMER LIST */
+/* LOGIN & EXTRAS */
 .card { background: #1e1e24; border-radius: 15px; padding: 25px; text-align: center; width: 85%; max-width: 350px; }
 .btn { width: 100%; padding: 12px; border-radius: 8px; border: none; background: #3498db; color: white; font-weight: bold; margin-top: 10px; }
-.logout-btn { background: #e74c3c; margin-top: auto; width: 100%; }
+
+/* LOGOUT BUTTON FIX */
+.logout-btn { 
+    background: #e74c3c; 
+    margin-top: auto; 
+    width: 100%;
+    /* নিচের মেনু থেকে দূরত্ব রাখার জন্য */
+    margin-bottom: 20px; 
+}
+
 .timer-list { display: flex; flex-direction: column; gap: 10px; }
 .timer-card-item { background: #2c2c31; padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #2ecc71; }
 .btn-delete-timer { background: transparent; color: #e74c3c; border: none; font-size: 16px; }
