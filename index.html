@@ -6,9 +6,8 @@
 <title>Smart Home Pro</title>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-<link rel="stylesheet" href="styles.css">
-<script type="module" src="app.js"></script>
-
+<link rel="stylesheet" href="styles.css?v=2">
+<script type="module" src="app.js?v=2"></script>
 </head>
 <body>
 
@@ -43,7 +42,6 @@
     <h3>Set New Timer</h3>
     
     <div class="time-inputs" style="text-align:left; margin-top:20px;">
-      
       <label>Select Device:</label>
       <select id="modalDeviceSelect">
         <option value="" disabled selected>Choose a device...</option>
@@ -54,10 +52,8 @@
         <option value="gpio5">Light 5</option>
         <option value="gpio6">Light 6</option>
       </select>
-
       <label>Auto ON Time:</label>
       <input type="time" id="modalTimeOn">
-      
       <label>Auto OFF Time:</label>
       <input type="time" id="modalTimeOff">
     </div>
@@ -83,31 +79,92 @@
     <div id="homePage" class="page-section active-page">
       <h4 class="section-title">Rooms & Devices</h4>
       <div class="grid-container">
-        <div class="device-card"><div class="card-top"><i class="fas fa-lightbulb device-icon"></i><span id="label_gpio1" class="device-name">Light 1</span></div><button id="gpio1Btn" class="power-btn" data-gpio="gpio1"><i class="fas fa-power-off"></i></button><span id="status_gpio1" class="status-text">OFF</span></div>
-        <div class="device-card"><div class="card-top"><i class="fas fa-fan device-icon"></i><span id="label_gpio2" class="device-name">Light 2</span></div><button id="gpio2Btn" class="power-btn" data-gpio="gpio2"><i class="fas fa-power-off"></i></button><span id="status_gpio2" class="status-text">OFF</span></div>
-        <div class="device-card"><div class="card-top"><i class="fas fa-tv device-icon"></i><span id="label_gpio3" class="device-name">Light 3</span></div><button id="gpio3Btn" class="power-btn" data-gpio="gpio3"><i class="fas fa-power-off"></i></button><span id="status_gpio3" class="status-text">OFF</span></div>
-        <div class="device-card"><div class="card-top"><i class="fas fa-plug device-icon"></i><span id="label_gpio4" class="device-name">Light 4</span></div><button id="gpio4Btn" class="power-btn" data-gpio="gpio4"><i class="fas fa-power-off"></i></button><span id="status_gpio4" class="status-text">OFF</span></div>
-        <div class="device-card"><div class="card-top"><i class="fas fa-desktop device-icon"></i><span id="label_gpio5" class="device-name">Light 5</span></div><button id="gpio5Btn" class="power-btn" data-gpio="gpio5"><i class="fas fa-power-off"></i></button><span id="status_gpio5" class="status-text">OFF</span></div>
-        <div class="device-card"><div class="card-top"><i class="fas fa-lamp device-icon"></i><span id="label_gpio6" class="device-name">Light 6</span></div><button id="gpio6Btn" class="power-btn" data-gpio="gpio6"><i class="fas fa-power-off"></i></button><span id="status_gpio6" class="status-text">OFF</span></div>
+        
+        <div class="device-card">
+          <div class="card-top">
+            <i class="fas fa-lightbulb device-icon"></i>
+            <span id="label_gpio1" class="device-name">Light 1</span>
+          </div>
+          <button id="gpio1Btn" class="button" data-gpio="gpio1">
+            <div class="button-outer">
+                <div class="button-inner">
+                    <span id="status_text_gpio1">OFF</span>
+                </div>
+            </div>
+          </button>
+        </div>
+
+        <div class="device-card">
+          <div class="card-top">
+            <i class="fas fa-fan device-icon"></i>
+            <span id="label_gpio2" class="device-name">Light 2</span>
+          </div>
+          <button id="gpio2Btn" class="button" data-gpio="gpio2">
+            <div class="button-outer"><div class="button-inner"><span id="status_text_gpio2">OFF</span></div></div>
+          </button>
+        </div>
+
+        <div class="device-card">
+          <div class="card-top">
+            <i class="fas fa-tv device-icon"></i>
+            <span id="label_gpio3" class="device-name">Light 3</span>
+          </div>
+          <button id="gpio3Btn" class="button" data-gpio="gpio3">
+            <div class="button-outer"><div class="button-inner"><span id="status_text_gpio3">OFF</span></div></div>
+          </button>
+        </div>
+
+        <div class="device-card">
+          <div class="card-top">
+            <i class="fas fa-plug device-icon"></i>
+            <span id="label_gpio4" class="device-name">Light 4</span>
+          </div>
+          <button id="gpio4Btn" class="button" data-gpio="gpio4">
+            <div class="button-outer"><div class="button-inner"><span id="status_text_gpio4">OFF</span></div></div>
+          </button>
+        </div>
+
+        <div class="device-card">
+          <div class="card-top">
+            <i class="fas fa-desktop device-icon"></i>
+            <span id="label_gpio5" class="device-name">Light 5</span>
+          </div>
+          <button id="gpio5Btn" class="button" data-gpio="gpio5">
+            <div class="button-outer"><div class="button-inner"><span id="status_text_gpio5">OFF</span></div></div>
+          </button>
+        </div>
+
+        <div class="device-card">
+          <div class="card-top">
+            <i class="fas fa-lamp device-icon"></i>
+            <span id="label_gpio6" class="device-name">Light 6</span>
+          </div>
+          <button id="gpio6Btn" class="button" data-gpio="gpio6">
+            <div class="button-outer"><div class="button-inner"><span id="status_text_gpio6">OFF</span></div></div>
+          </button>
+        </div>
+
       </div>
+
       <div class="control-card master-card" style="margin-top: 25px;">
-        <div class="text-area"><h3>Master Switch</h3><p>Control All Devices</p></div>
-        <button id="masterBtn" class="power-btn master-power-btn" data-gpio="master"><i class="fas fa-power-off"></i></button>
+        <div class="text-area">
+          <h3>Master Switch</h3>
+          <p>Control All Devices</p>
+        </div>
+        <button id="masterBtn" class="button master-btn-style" data-gpio="master">
+            <div class="button-outer"><div class="button-inner"><span id="status_text_master">OFF</span></div></div>
+        </button>
       </div>
     </div>
 
     <div id="timerPage" class="page-section" style="display:none;">
-      
       <button id="openTimerModalBtn" class="btn-add-timer">
         <i class="fas fa-plus-circle"></i> Set New Timer
       </button>
-
       <h4 class="section-title" style="margin-top:20px;">Active Schedules</h4>
-      
       <div id="activeTimerList" class="timer-list">
         <p style="text-align:center; color:#555; margin-top:20px;">No active timers.</p>
       </div>
-
     </div>
 
     <div id="settingsPage" class="page-section" style="display:none;">
