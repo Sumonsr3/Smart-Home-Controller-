@@ -17,7 +17,7 @@ body {
     background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
 }
 
-/* --- NEW 3D BUTTON STYLES --- */
+/* --- BIG 3D BUTTON STYLES (UPDATED) --- */
 .button {
   all: unset;
   cursor: pointer;
@@ -25,9 +25,12 @@ body {
   position: relative;
   border-radius: 100em;
   background-color: rgba(0, 0, 0, 0.75);
-  font-size: 14px;
-  margin-top: 10px;
-  display: inline-block; /* Layout fix */
+  
+  /* --- পরিবর্তন: বাটন বড় করা হয়েছে --- */
+  font-size: 22px; /* আগে ছিল 14px, এখন 22px */
+  margin-top: 15px;
+  
+  display: inline-block;
   box-shadow:
     -0.15em -0.15em 0.15em -0.075em rgba(5, 5, 5, 0.25),
     0.0375em 0.0375em 0.0675em 0 rgba(5, 5, 5, 0.1);
@@ -70,7 +73,7 @@ body {
   position: relative;
   z-index: 1;
   border-radius: inherit;
-  padding: 0.7em 1.5em; /* Size Adjusted */
+  padding: 0.6em 1.2em; /* বড় বাটনের জন্য প্যাডিং সমন্বয় */
   background-image: linear-gradient(
     135deg,
     rgba(230, 230, 230, 1),
@@ -112,14 +115,12 @@ body {
   display: block;
 }
 
-/* ON State Text (White) */
 .button.on .button-inner span {
   background-image: none;
   color: white;
   text-shadow: 0 1px 2px rgba(0,0,0,0.3);
 }
 
-/* Hover/Active Effects */
 .button:hover .button-outer { transform: scale(0.98); }
 .button:active .button-inner { transform: scale(0.95); }
 
@@ -183,6 +184,8 @@ header {
 
 #mainContent { padding: 20px; padding-bottom: 90px; }
 .card { background: #1e1e1e; border-radius: 15px; padding: 20px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); margin-bottom: 20px; }
+
+/* Master Card (kept visible as it controls everything) */
 .master-card {
     background: linear-gradient(135deg, #ff9800, #f57c00);
     border-radius: 15px; padding: 20px; display: flex; align-items: center; justify-content: space-between;
@@ -192,13 +195,33 @@ header {
 .master-card .text-area p { margin: 0; font-size: 12px; opacity: 0.9; }
 
 .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+
+/* --- DEVICE CARD UPDATES (NO BACKGROUND) --- */
 .device-card {
-    background: #252525; padding: 15px; border-radius: 15px; text-align: center;
-    display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 160px;
+    background: transparent; /* ব্যাকগ্রাউন্ড রিমুভ করা হয়েছে */
+    padding: 10px; 
+    border-radius: 15px; 
+    text-align: center;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; 
+    height: auto; /* হাইট ফিক্সড ছিল, এখন অটো */
+    box-shadow: none; /* শ্যাডো রিমুভ করা হয়েছে */
 }
+
 .card-top { display: flex; flex-direction: column; align-items: center; }
-.device-icon { font-size: 20px; color: #03a9f4; margin-bottom: 8px; }
-.device-name { font-size: 14px; font-weight: 600; }
+
+/* আইকন এবং টেক্সট সাইজ আপডেট */
+.device-icon { 
+    font-size: 28px; /* আইকন বড় */
+    color: #03a9f4; 
+    margin-bottom: 5px; 
+    text-shadow: 0 0 10px rgba(3, 169, 244, 0.3); /* গ্লো এফেক্ট */
+}
+.device-name { 
+    font-size: 16px; 
+    font-weight: 600; 
+    color: #ccc; 
+    margin-bottom: 5px;
+}
 
 input, select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #444; background: #333; color: white; box-sizing: border-box; }
 .btn { width: 100%; padding: 12px; border-radius: 8px; border: none; background: #03a9f4; color: white; font-weight: bold; cursor: pointer; margin-top: 10px; }
