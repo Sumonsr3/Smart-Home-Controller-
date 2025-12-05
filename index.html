@@ -43,7 +43,6 @@
     <h3>Set New Timer</h3>
     
     <div class="time-inputs" style="text-align:left; margin-top:20px;">
-      
       <label>Select Device:</label>
       <select id="modalDeviceSelect">
         <option value="" disabled selected>Choose a device...</option>
@@ -127,7 +126,6 @@
     </div>
 
     <div id="timerPage" class="page-section" style="display:none;">
-      
       <button id="openTimerModalBtn" class="btn-add-timer">
         <i class="fas fa-plus-circle"></i> Set New Timer
       </button>
@@ -137,7 +135,6 @@
       <div id="activeTimerList" class="timer-list">
         <p style="text-align:center; color:#555; margin-top:20px;">No active timers.</p>
       </div>
-
     </div>
 
     <div id="settingsPage" class="page-section" style="display:none;">
@@ -159,9 +156,18 @@
   </main>
 
   <nav class="bottom-nav">
-    <div class="nav-item active" onclick="switchTab('home')"><i class="fas fa-home"></i> <span>Home</span></div>
-    <div class="nav-item" onclick="switchTab('timer')"><i class="fas fa-stopwatch"></i> <span>Timer</span></div>
-    <div class="nav-item" onclick="switchTab('settings')"><i class="fas fa-cog"></i> <span>Settings</span></div>
+    <div class="nav-item active" onclick="switchTab('home')">
+      <i class="fas fa-home"></i> 
+      <span>Home</span>
+    </div>
+    <div class="nav-item" onclick="switchTab('timer')">
+      <i class="fas fa-stopwatch"></i> 
+      <span>Timer</span>
+    </div>
+    <div class="nav-item" onclick="switchTab('settings')">
+      <i class="fas fa-cog"></i> 
+      <span>Settings</span>
+    </div>
   </nav>
 
 </div>
@@ -177,6 +183,7 @@
 
     document.getElementById(tabName + 'Page').style.display = 'block';
     
+    // Tab Activation Logic
     if(tabName === 'home') navItems[0].classList.add('active');
     if(tabName === 'timer') navItems[1].classList.add('active');
     if(tabName === 'settings') navItems[2].classList.add('active');
