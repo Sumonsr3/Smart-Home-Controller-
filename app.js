@@ -1,237 +1,345 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-import { getDatabase, ref, set, onValue, remove } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
-// --- কনফিগারেশন ---
+// Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyAzOuFlqKueEdbPPH83moT9wFgidm8TVBM",
-  authDomain: "smart-home-controller-b3004.firebaseapp.com",
-  databaseURL: "https://smart-home-controller-b3004-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "smart-home-controller-b3004",
-  storageBucket: "smart-home-controller-b3004.firebasestorage.app",
-  messagingSenderId: "471259029586",
-  appId: "1:471259029586:web:6f489f0e3b229593523f8b"
+  apiKey: "AIzaSyDxkigmr_aFKfkcA40tYxkJ7uNFxtmg34s",
+  authDomain: "smart-home-control-85131.firebaseapp.com",
+  databaseURL: "https://smart-home-control-85131-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "smart-home-control-85131",
+  storageBucket: "smart-home-control-85131.firebasestorage.app",
+  messagingSenderId: "1088125775954",
+  appId: "1:1088125775954:web:743b9899cbcb7011966f8b"
 };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth();
 const db = getDatabase(app);
 
-// Global Vars
-const gpioList = ["gpio1", "gpio2", "gpio3", "gpio4", "gpio5", "gpio6"];
-let currentDeviceNames = {};
+// Global Variables
+let deviceNames = ["SW 1", "SW 2", "SW 3", "SW 4", "SW 5", "SW 6"];
+let activeTimers = {};
+let lastSeenTime = 0;
+let tempSelection = { device: "1", action: "On", hour: "12", minute: "00", ampm: "AM" };
 
-// UI Elements
-const authContainer = document.getElementById("authContainer");
-const appContainer = document.getElementById("appContainer");
-const loginBtn = document.getElementById("loginBtn");
-const logoutBtn = document.getElementById("logoutBtn");
-const authMsg = document.getElementById("authMsg");
-const badge = document.getElementById("statusBadge");
-
-// Modal Elements
-const confirmModal = document.getElementById("confirmModal");
-const timerModal = document.getElementById("timerModal");
-const modalDeviceSelect = document.getElementById("modalDeviceSelect");
-const modalTimeOn = document.getElementById("modalTimeOn");
-const modalTimeOff = document.getElementById("modalTimeOff");
-const activeTimerList = document.getElementById("activeTimerList");
-
-// --- Auth ---
-loginBtn.onclick = async () => {
-  authMsg.textContent = "Please wait...";
-  try {
-    await signInWithEmailAndPassword(
-      auth,
-      document.getElementById("emailField").value,
-      document.getElementById("passwordField").value
-    );
-  } catch (e) {
-    authMsg.textContent = e.message;
-  }
+// === UI REFS ===
+const ui = {
+    authBox: document.getElementById("authBox"),
+    mainContent: document.getElementById("mainContent"),
+    bottomNav: document.getElementById("bottomNav"),
+    statusBadge: document.getElementById("statusBadge"),
+    authMsg: document.getElementById("authMsg")
 };
 
-logoutBtn.onclick = () => signOut(auth);
+// ==================================================
+// 1. SETUP EVENT LISTENERS
+// ==================================================
 
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    authContainer.style.display = "none";
-    appContainer.style.display = "block";
-    badge.className = "status-badge online";
-    badge.textContent = "Online";
-    startApp();
-  } else {
-    authContainer.style.display = "flex";
-    appContainer.style.display = "none";
-    badge.className = "status-badge offline";
-    badge.textContent = "Offline";
-  }
+// Login Button
+const loginBtn = document.getElementById("loginBtn");
+if (loginBtn) {
+    loginBtn.addEventListener("click", () => {
+        const email = document.getElementById("emailField").value;
+        const pass = document.getElementById("passwordField").value;
+        const msg = document.getElementById("authMsg");
+
+        msg.textContent = "Checking...";
+        msg.style.color = "#4fc3f7";
+
+        signInWithEmailAndPassword(auth, email, pass)
+            .catch((e) => {
+                console.error(e);
+                msg.style.color = "#ff1744";
+                if (e.code === 'auth/invalid-email') msg.textContent = "Invalid Email";
+                else if (e.code === 'auth/user-not-found') msg.textContent = "User Not Found";
+                else if (e.code === 'auth/wrong-password') msg.textContent = "Wrong Password";
+                else msg.textContent = "Login Failed";
+            });
+    });
+}
+
+// Logout Button
+const logoutBtn = document.getElementById("logoutBtn");
+if (logoutBtn) {
+    logoutBtn.addEventListener("click", () => {
+        showDialog("Exit", "Logout system?", () => signOut(auth));
+    });
+}
+
+// Master Button
+const masterBtn = document.getElementById("masterBtn");
+if (masterBtn) {
+    masterBtn.addEventListener("click", () => {
+        let anyOn = false;
+        // Check for .on class on buttons
+        for (let i = 1; i <= 6; i++) {
+            const btn = document.getElementById("gpio" + i + "Btn");
+            if (btn && btn.classList.contains("on")) { anyOn = true; break; }
+        }
+        
+        const action = anyOn ? "Turn OFF" : "Turn ON";
+        const val = anyOn ? 0 : 1;
+        
+        showDialog("Master Control", `${action} All Switches?`, () => {
+            for (let i = 1; i <= 6; i++) set(ref(db, "/gpio" + i), val);
+        });
+    });
+}
+
+// Modal Triggers
+const openRenameBtn = document.getElementById("openRenameBtn");
+if (openRenameBtn) openRenameBtn.addEventListener("click", () => document.getElementById("renameModal").classList.add("active"));
+
+const openTimerBtn = document.getElementById("openTimerModalBtn");
+if (openTimerBtn) openTimerBtn.addEventListener("click", () => document.getElementById("timerModal").classList.add("active"));
+
+// Close Buttons
+document.querySelectorAll(".close-icon").forEach(icon => {
+    icon.addEventListener("click", function() {
+        this.closest(".modal-overlay").classList.remove("active");
+    });
 });
 
-function startApp() {
-  
-  // 1. Listen for GPIO Status (UPDATED FOR NEW BUTTON)
-  [...gpioList, "master"].forEach((key) => {
-    onValue(ref(db, "/" + key), (snapshot) => {
-      let val = snapshot.val() || 0;
-      let btn = document.getElementById(key + "Btn");
-      let txtSpan = document.getElementById("status_text_" + key);
+// Add Schedule Button
+const addBtn = document.querySelector(".add-btn");
+if (addBtn) addBtn.addEventListener("click", addNewSchedule);
 
-      if(btn) {
-        if(val === 1) {
-            btn.classList.add("on"); // Make green
-            if(txtSpan) txtSpan.textContent = "ON";
+// Theme Toggle
+const themeToggle = document.getElementById("themeToggle");
+if (themeToggle) {
+    if (localStorage.getItem("theme") === "light") {
+        document.body.classList.add("light-mode");
+        themeToggle.checked = false;
+    } else {
+        themeToggle.checked = true;
+    }
+    themeToggle.addEventListener("change", () => {
+        if (!themeToggle.checked) {
+            document.body.classList.add("light-mode");
+            localStorage.setItem("theme", "light");
         } else {
-            btn.classList.remove("on"); // Make grey
-            if(txtSpan) txtSpan.textContent = "OFF";
+            document.body.classList.remove("light-mode");
+            localStorage.setItem("theme", "dark");
         }
-      }
     });
-  });
-
-  // 2. Listen for Names
-  gpioList.forEach(key => {
-    onValue(ref(db, "/config/names/" + key), (snapshot) => {
-      let name = snapshot.val();
-      if(name) {
-        let label = document.getElementById("label_" + key);
-        if(label) label.textContent = name;
-        
-        let input = document.getElementById("edit_" + key);
-        if(input) input.value = name;
-        
-        currentDeviceNames[key] = name;
-        
-        let option = modalDeviceSelect.querySelector(`option[value="${key}"]`);
-        if(option) option.textContent = name;
-      } else {
-        currentDeviceNames[key] = "Light " + key.replace("gpio", "");
-      }
-    });
-  });
-
-  // 3. LISTEN FOR TIMERS
-  onValue(ref(db, "/timers"), (snapshot) => {
-    activeTimerList.innerHTML = ""; 
-    const timers = snapshot.val();
-    
-    if (timers) {
-      Object.keys(timers).forEach(key => {
-        let data = timers[key];
-        let div = document.createElement("div");
-        div.className = "timer-card-item";
-        
-        let devName = currentDeviceNames[key] || key;
-        let schedule = "";
-        if(data.on && data.off) schedule = `ON: ${data.on} <br> OFF: ${data.off}`;
-        else if(data.on) schedule = `ON: ${data.on}`;
-        else if(data.off) schedule = `OFF: ${data.off}`;
-        
-        div.innerHTML = `
-          <div class="t-info">
-            <span class="t-dev-name">${devName}</span>
-            <div class="t-time-val">${schedule}</div>
-          </div>
-          <button class="btn-delete-timer" onclick="deleteTimer('${key}')">
-            <i class="fas fa-trash"></i>
-          </button>
-        `;
-        activeTimerList.appendChild(div);
-      });
-    } else {
-      activeTimerList.innerHTML = `<p style="text-align:center; color:#555; margin-top:20px;">No active timers.</p>`;
-    }
-  });
-
-  // 4. Button Logic (UPDATED)
-  // Individual Buttons
-  gpioList.forEach((key) => {
-    const btn = document.getElementById(key + "Btn");
-    if(btn) {
-        btn.onclick = () => {
-          let newState = btn.classList.contains("on") ? 0 : 1;
-          set(ref(db, "/" + key), newState);
-        };
-    }
-  });
-
-  // Master Button Logic
-  const masterBtn = document.getElementById("masterBtn");
-  if(masterBtn) {
-      masterBtn.onclick = () => {
-        confirmModal.style.display = "flex";
-      };
-  }
-
-  document.getElementById("cancelMasterBtn").onclick = () => {
-    confirmModal.style.display = "none";
-  };
-
-  document.getElementById("confirmMasterBtn").onclick = () => {
-    let isAnyOn = false;
-    // Check if any button is ON visually
-    gpioList.forEach(g => {
-       let b = document.getElementById(g + "Btn");
-       if(b && b.classList.contains("on")) isAnyOn = true;
-    });
-    
-    let target = isAnyOn ? 0 : 1;
-    set(ref(db, "/master"), target);
-    gpioList.forEach(g => set(ref(db, "/" + g), target));
-    confirmModal.style.display = "none";
-  };
 }
 
-// --- TIMER MODAL LOGIC (With Safety Check) ---
-const openTimerModalBtn = document.getElementById("openTimerModalBtn");
+// Initialize Dropdowns
+populateTimeSelects();
 
-if (openTimerModalBtn) {
-  openTimerModalBtn.addEventListener("click", () => {
-    if(timerModal && modalDeviceSelect && modalTimeOn && modalTimeOff) {
-        modalDeviceSelect.value = "";
-        modalTimeOn.value = "";
-        modalTimeOff.value = "";
-        timerModal.style.display = "flex";
+
+// ==================================================
+// 2. AUTH STATE
+// ==================================================
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        document.getElementById("authBox").style.display = "none";
+        document.getElementById("mainContent").style.display = "block";
+        document.getElementById("bottomNav").style.display = "flex";
+        document.getElementById("statusBadge").textContent = "Connecting...";
+        
+        // Load Data
+        window.switchTab('home');
+        startListeners();
     } else {
-        alert("Error: Modal elements missing.");
+        document.getElementById("authBox").style.display = "flex";
+        document.getElementById("mainContent").style.display = "none";
+        document.getElementById("bottomNav").style.display = "none";
+        if (ui.authMsg) ui.authMsg.textContent = "";
     }
-  });
-}
+});
 
-document.getElementById("cancelTimerBtn").onclick = () => {
-    timerModal.style.display = "none";
-};
 
-document.getElementById("saveTimerBtn").onclick = () => {
-    let selectedDevice = modalDeviceSelect.value;
-    let tOn = modalTimeOn.value;
-    let tOff = modalTimeOff.value;
+// ==================================================
+// 3. FIREBASE LISTENERS
+// ==================================================
+function startListeners() {
+    // Heartbeat
+    onValue(ref(db, "/lastSeen"), () => {
+        lastSeenTime = Date.now();
+        document.getElementById("statusBadge").className = "status-badge online";
+        document.getElementById("statusBadge").textContent = "Online";
+    });
+    setInterval(() => {
+        if (Date.now() - lastSeenTime > 15000) {
+            document.getElementById("statusBadge").className = "status-badge offline";
+            document.getElementById("statusBadge").textContent = "Offline";
+        }
+    }, 1000);
 
-    if(!selectedDevice) {
-        alert("Please select a device!");
-        return;
-    }
-    
-    if(tOn || tOff) {
-        set(ref(db, "/timers/" + selectedDevice), {
-            on: tOn,
-            off: tOff
+    // 6 Switch Loop
+    for (let i = 1; i <= 6; i++) {
+        const idx = i;
+        
+        // Switch Logic (Toggles .on class for new design)
+        onValue(ref(db, "/gpio" + idx), (snap) => {
+            const val = snap.val();
+            const btn = document.getElementById("gpio" + idx + "Btn");
+            
+            if (btn) {
+                if (val == 1) { 
+                    btn.classList.add("on"); 
+                } else { 
+                    btn.classList.remove("on"); 
+                }
+            }
+            updateMasterButtonUI();
         });
-    }
-    timerModal.style.display = "none";
-};
 
-window.deleteTimer = function(key) {
-  if(confirm("Delete schedule for this device?")) {
-    remove(ref(db, "/timers/" + key));
-  }
+        // Label Logic
+        onValue(ref(db, "/label" + idx), (snap) => {
+            if (snap.val()) {
+                deviceNames[idx - 1] = snap.val();
+                document.getElementById("name_gpio" + idx).textContent = snap.val();
+                let input = document.getElementById("rename" + idx);
+                if (input && document.activeElement !== input) input.value = snap.val();
+                if (tempSelection.device == idx) document.getElementById("displayDevice").textContent = snap.val();
+                renderList();
+            }
+        });
+        
+        // Timer Logic
+        onValue(ref(db, "/timeOn" + idx), (snap) => { activeTimers["timeOn" + idx] = snap.val(); renderList(); });
+        onValue(ref(db, "/timeOff" + idx), (snap) => { activeTimers["timeOff" + idx] = snap.val(); renderList(); });
+    }
+
+    // Button Click Logic
+    document.querySelectorAll(".gpio-button").forEach((btn) => {
+        btn.onclick = () => {
+            const key = btn.dataset.gpio;
+            const newState = btn.classList.contains("on") ? 0 : 1;
+            set(ref(db, "/" + key), newState);
+        };
+    });
 }
 
-// Save Names Logic
-document.getElementById("saveNamesBtn").onclick = () => {
-  gpioList.forEach(key => {
-    let newName = document.getElementById("edit_" + key).value;
-    if(newName) set(ref(db, "/config/names/" + key), newName);
-  });
-  alert("Names Saved!");
+function updateMasterButtonUI() {
+    let anyOn = false;
+    for (let i = 1; i <= 6; i++) {
+        const btn = document.getElementById("gpio" + i + "Btn");
+        if (btn && btn.classList.contains("on")) anyOn = true;
+    }
+    const txt = document.getElementById("masterStatus");
+    if(txt) txt.textContent = anyOn ? "ALL OFF" : "ALL ON";
+}
+
+
+// ==================================================
+// 4. GLOBAL FUNCTIONS & UTILS
+// ==================================================
+
+// Navigation
+window.switchTab = function(tabName) {
+    document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active-page'));
+    const target = document.getElementById(tabName + 'Page');
+    if (target) target.classList.add('active-page');
+    const radio = document.getElementById('tab-' + tabName);
+    if (radio) radio.checked = true;
 };
+
+// Popup Selection Logic
+window.openSelection = function(type) {
+    const modal = document.getElementById("selectionModal");
+    const container = document.getElementById("selectionListContainer");
+    container.innerHTML = "";
+    modal.classList.add("active");
+
+    let options = [];
+    if (type === 'device') options = deviceNames.map((n, i) => ({ val: (i + 1).toString(), text: n }));
+    else if (type === 'action') options = [{ val: "On", text: "Turn ON" }, { val: "Off", text: "Turn OFF" }];
+    else if (type === 'hour') for (let i = 1; i <= 12; i++) options.push({ val: (i < 10 ? "0" + i : i).toString(), text: (i < 10 ? "0" + i : i).toString() });
+    else if (type === 'minute') for (let i = 0; i < 60; i++) options.push({ val: (i < 10 ? "0" + i : i).toString(), text: (i < 10 ? "0" + i : i).toString() });
+    else if (type === 'ampm') options = [{ val: "AM", text: "AM" }, { val: "PM", text: "PM" }];
+
+    options.forEach(opt => {
+        const div = document.createElement("div");
+        div.className = "select-item";
+        if (tempSelection[type] == opt.val) div.classList.add("selected");
+        div.textContent = opt.text;
+        div.onclick = () => {
+            tempSelection[type] = opt.val;
+            if (type === 'device') document.getElementById("displayDevice").textContent = opt.text;
+            else if (type === 'action') document.getElementById("displayAction").textContent = opt.text;
+            else if (type === 'hour') document.getElementById("displayHour").textContent = opt.text;
+            else if (type === 'minute') document.getElementById("displayMinute").textContent = opt.text;
+            else if (type === 'ampm') document.getElementById("displayAmPm").textContent = opt.text;
+            modal.classList.remove("active");
+        };
+        container.appendChild(div);
+    });
+};
+
+window.addNewSchedule = function() {
+    let d = tempSelection.device;
+    let a = tempSelection.action;
+    let h = parseInt(tempSelection.hour);
+    let m = tempSelection.minute;
+    let ap = tempSelection.ampm;
+
+    if (ap === "PM" && h < 12) h += 12;
+    if (ap === "AM" && h === 12) h = 0;
+
+    let t = (h < 10 ? "0" + h : h) + ":" + m;
+    set(ref(db, "/time" + a + d), t).then(() => {
+        document.getElementById("timerModal").classList.remove("active");
+        alert("Timer Set!");
+    });
+};
+
+window.saveNameManually = function(id) {
+    const val = document.getElementById("rename" + id).value;
+    if (val) set(ref(db, "/label" + id), val);
+};
+
+window.closeModal = function(id) {
+    document.getElementById(id).classList.remove("active");
+};
+
+function populateTimeSelects() {
+    // Logic handled by custom divs now
+}
+
+function renderList() {
+    const c = document.getElementById("scheduleListContainer");
+    if (!c) return;
+    c.innerHTML = "";
+    for (let i = 1; i <= 6; i++) {
+        let n = deviceNames[i - 1] || "SW " + i;
+        if (activeTimers["timeOn" + i]) addItem(c, i, "On", activeTimers["timeOn" + i], n);
+        if (activeTimers["timeOff" + i]) addItem(c, i, "Off", activeTimers["timeOff" + i], n);
+    }
+}
+
+function addItem(c, i, act, time, name) {
+    let [H, M] = time.split(":"); H = parseInt(H);
+    let ampm = H >= 12 ? "PM" : "AM"; H = H % 12; H = H ? H : 12;
+    let niceTime = (H < 10 ? "0" + H : H) + ":" + M + " " + ampm;
+    let color = act === "On" ? "#00e676" : "#ff1744";
+
+    c.innerHTML += `
+    <div class="schedule-item">
+        <div class="schedule-info">
+            <b>${name}</b>
+            <span>Will turn <span style="color:${color};font-weight:bold">${act.toUpperCase()}</span> at <b>${niceTime}</b></span>
+        </div>
+        <button onclick="window.delT(${i}, '${act}')" class="del-btn"><i class="fas fa-trash-alt"></i></button>
+    </div>`;
+}
+
+window.delT = (i, a) => {
+    if (confirm("Delete timer?")) set(ref(db, "/time" + a + i), "");
+};
+
+// Modal Helper
+const modal = document.getElementById("customModal");
+let onConfirm = null;
+function showDialog(t, m, cb) {
+    document.getElementById("modalTitle").textContent = t;
+    document.getElementById("modalMessage").textContent = m;
+    onConfirm = cb;
+    modal.classList.add("active");
+}
+document.getElementById("btnCancel").onclick = () => modal.classList.remove("active");
+document.getElementById("btnConfirm").onclick = () => { if (onConfirm) onConfirm(); modal.classList.remove("active"); };
