@@ -82,18 +82,48 @@
     
     <div id="homePage" class="page-section active-page">
       <h4 class="section-title">Rooms & Devices</h4>
+      
       <div class="grid-container">
-        <div class="device-card"><div class="card-top"><i class="fas fa-lightbulb device-icon"></i><span id="label_gpio1" class="device-name">Light 1</span></div><button id="gpio1Btn" class="power-btn" data-gpio="gpio1"><i class="fas fa-power-off"></i></button><span id="status_gpio1" class="status-text">OFF</span></div>
-        <div class="device-card"><div class="card-top"><i class="fas fa-fan device-icon"></i><span id="label_gpio2" class="device-name">Light 2</span></div><button id="gpio2Btn" class="power-btn" data-gpio="gpio2"><i class="fas fa-power-off"></i></button><span id="status_gpio2" class="status-text">OFF</span></div>
-        <div class="device-card"><div class="card-top"><i class="fas fa-tv device-icon"></i><span id="label_gpio3" class="device-name">Light 3</span></div><button id="gpio3Btn" class="power-btn" data-gpio="gpio3"><i class="fas fa-power-off"></i></button><span id="status_gpio3" class="status-text">OFF</span></div>
-        <div class="device-card"><div class="card-top"><i class="fas fa-plug device-icon"></i><span id="label_gpio4" class="device-name">Light 4</span></div><button id="gpio4Btn" class="power-btn" data-gpio="gpio4"><i class="fas fa-power-off"></i></button><span id="status_gpio4" class="status-text">OFF</span></div>
-        <div class="device-card"><div class="card-top"><i class="fas fa-desktop device-icon"></i><span id="label_gpio5" class="device-name">Light 5</span></div><button id="gpio5Btn" class="power-btn" data-gpio="gpio5"><i class="fas fa-power-off"></i></button><span id="status_gpio5" class="status-text">OFF</span></div>
-        <div class="device-card"><div class="card-top"><i class="fas fa-lamp device-icon"></i><span id="label_gpio6" class="device-name">Light 6</span></div><button id="gpio6Btn" class="power-btn" data-gpio="gpio6"><i class="fas fa-power-off"></i></button><span id="status_gpio6" class="status-text">OFF</span></div>
+        
+        <div id="gpio1Btn" class="device-card">
+          <span id="label_gpio1" class="device-name">Light 1</span>
+          <span id="status_gpio1" class="status-text">OFF</span>
+        </div>
+
+        <div id="gpio2Btn" class="device-card">
+          <span id="label_gpio2" class="device-name">Light 2</span>
+          <span id="status_gpio2" class="status-text">OFF</span>
+        </div>
+
+        <div id="gpio3Btn" class="device-card">
+          <span id="label_gpio3" class="device-name">Light 3</span>
+          <span id="status_gpio3" class="status-text">OFF</span>
+        </div>
+
+        <div id="gpio4Btn" class="device-card">
+          <span id="label_gpio4" class="device-name">Light 4</span>
+          <span id="status_gpio4" class="status-text">OFF</span>
+        </div>
+
+        <div id="gpio5Btn" class="device-card">
+          <span id="label_gpio5" class="device-name">Light 5</span>
+          <span id="status_gpio5" class="status-text">OFF</span>
+        </div>
+
+        <div id="gpio6Btn" class="device-card">
+          <span id="label_gpio6" class="device-name">Light 6</span>
+          <span id="status_gpio6" class="status-text">OFF</span>
+        </div>
+
       </div>
-      <div class="control-card master-card" style="margin-top: 25px;">
-        <div class="text-area"><h3>Master Switch</h3><p>Control All Devices</p></div>
-        <button id="masterBtn" class="power-btn master-power-btn" data-gpio="master"><i class="fas fa-power-off"></i></button>
+
+      <div class="master-row">
+        <div id="masterBtn" class="device-card master-btn-style">
+            <span class="device-name">Master Switch</span>
+            <span class="status-text">OFF</span>
+        </div>
       </div>
+
     </div>
 
     <div id="timerPage" class="page-section" style="display:none;">
