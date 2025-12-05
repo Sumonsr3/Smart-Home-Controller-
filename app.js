@@ -22,13 +22,14 @@ const firebaseConfig = {
   messagingSenderId: "471259029586",
   appId: "1:471259029586:web:6f489f0e3b229593523f8b"
 };
+// --- কনফিগারেশন শেষ ---
 
-// Initialize Firebase
+// Firebase ইনিশিয়ালাইজেশন
 const app = initializeApp(firebaseConfig);
 const auth = getAuth();
 const db = getDatabase(app);
 
-// UI elements
+// HTML ইলিমেন্ট ধরা
 const authBox = document.getElementById("authBox");
 const controlBox = document.getElementById("controlBox");
 const loginBtn = document.getElementById("loginBtn");
@@ -36,24 +37,32 @@ const logoutBtn = document.getElementById("logoutBtn");
 const authMsg = document.getElementById("authMsg");
 const badge = document.getElementById("statusBadge");
 
-// List of all GPIO keys
+// ৬টি জিপিআইও এর লিস্ট
 const gpioList = ["gpio1", "gpio2", "gpio3", "gpio4", "gpio5", "gpio6"];
 
-// Collect buttons and labels dynamically
+// বাটন এবং স্ট্যাটাস টেক্সট রাখার অবজেক্ট
 const gpioButtons = {};
 const gpioLabels = {};
 
-// Fill the objects including Master
+// সব কি (Key) একসাথে প্রসেস করা (1-6 + Master)
 const allKeys = [...gpioList, "master"];
 
+// বাটনগুলো খুঁজে বের করা
 allKeys.forEach(key => {
-  gpioButtons[key] = document.getElementById(key + "Btn");
-  gpioLabels[key] = document.getElementById(key + "Status");
+  const btn = document.getElementById(key + "Btn");
+  const lbl = document.getElementById(key + "Status");
+  
+  if (btn && lbl) {
+    gpioButtons[key] = btn;
+    gpioLabels[key] = lbl;
+  } else {
+    console.warn("Element not found for:", key);
+  }
 });
 
-// Login
+// লগিন ফাংশন
 loginBtn.onclick = async () => {
-  authMsg.textContent = "";
+  authMsg.textContent = "Logging in...";
   try {
     await signInWithEmailAndPassword(
       auth,
@@ -61,13 +70,14 @@ loginBtn.onclick = async () => {
       document.getElementById("passwordField").value
     );
   } catch (e) {
-    authMsg.textContent = e.message;
+    authMsg.textContent = "Error: " + e.message;
   }
 };
 
+// লগআউট ফাংশন
 logoutBtn.onclick = () => signOut(auth);
 
-// Auth state monitor
+// অথেন্টিকেশন মনিটর
 onAuthStateChanged(auth, (user) => {
   if (user) {
     authBox.style.display = "none";
@@ -83,46 +93,46 @@ onAuthStateChanged(auth, (user) => {
   }
 });
 
-// Listen to DB
+// ডাটাবেস লিসেনার এবং বাটন ক্লিক হ্যান্ডলার
 function startListeners() {
-  // Loop through all GPIOs + Master to listen for changes
+  
+  // ১. ডাটাবেস থেকে ডাটা রিড করা (রিয়েলটাইম)
   allKeys.forEach((key) => {
     onValue(ref(db, "/" + key), (snapshot) => {
-      let value = snapshot.val() ? 1 : 0;
+      let value = snapshot.val();
+      // যদি ডাটা না থাকে (null), তাহলে 0 ধরবো
+      if (value === null) value = 0; 
       updateUI(key, value);
     });
   });
 
-  // Handle Button Clicks
+  // ২. বাটনে ক্লিক করলে ডাটাবেসে রাইট করা
   Object.keys(gpioButtons).forEach((key) => {
     let btn = gpioButtons[key];
     
     btn.onclick = () => {
+      // বর্তমানে অন থাকলে অফ করবো, অফ থাকলে অন
       let newState = btn.classList.contains("on") ? 0 : 1;
 
       if (key === "master") {
-        // If Master is clicked, update Master AND all GPIOs
-        let updates = {};
-        updates["/master"] = newState;
-        gpioList.forEach(gpio => {
-          updates["/" + gpio] = newState;
-        });
-        
-        // Use update() or set individually. Here we set individually for simplicity
+        console.log("Master Switch Clicked:", newState);
+        // মাস্টার সুইচ: নিজের এবং বাকি সবগুলোর ভ্যালু আপডেট করবে
         set(ref(db, "/master"), newState);
+        
         gpioList.forEach(gpio => {
           set(ref(db, "/" + gpio), newState);
         });
 
       } else {
-        // Normal GPIO click
+        console.log(key, "Clicked:", newState);
+        // সাধারণ সুইচ: শুধু নিজের ভ্যালু আপডেট করবে
         set(ref(db, "/" + key), newState);
       }
     };
   });
 }
 
-// Update UI
+// UI আপডেট ফাংশন
 function updateUI(key, val) {
   let btn = gpioButtons[key];
   let lab = gpioLabels[key];
@@ -132,7 +142,8 @@ function updateUI(key, val) {
   if (val === 1) {
     btn.classList.add("on");
     lab.textContent = "Status: ON";
-    lab.style.color = (key === 'master') ? "#333" : "#9effae"; // Dark text for master ON
+    // মাস্টারের জন্য টেক্সট কালার কালো, বাকিদের জন্য সবুজ
+    lab.style.color = (key === 'master') ? "#ffea00" : "#9effae"; 
   } else {
     btn.classList.remove("on");
     lab.textContent = "Status: OFF";
