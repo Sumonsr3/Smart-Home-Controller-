@@ -66,7 +66,6 @@ header {
 /* --- MAIN CONTENT --- */
 #mainContent {
     padding: 20px;
-    /* মেনুবারের আড়ালে যাতে কন্টেন্ট না পড়ে */
     padding-bottom: 120px; 
     height: calc(100vh - 100px); 
     overflow-y: auto;
@@ -77,7 +76,7 @@ header {
 .page-section {
     display: none;
     flex-direction: column;
-    min-height: 100%;
+    min-height: 100%; 
 }
 .active-page {
     display: flex;
@@ -140,21 +139,23 @@ header {
     border-radius: 4px;
 }
 
-/* --- MASTER SWITCH (AUTO WIDTH & POSITION FIX) --- */
+/* --- MASTER SWITCH (Updated Size) --- */
 .master-row {
-    margin-top: 30px; /* অন্যান্য সুইচের থেকে একটু নিচে */
-    margin-bottom: 50px; /* নিচে জায়গা রাখা */
+    margin-top: 10px;
+    margin-bottom: 30px;
     display: flex;
     justify-content: center;
 }
 
 .master-btn-style {
-    width: auto !important; /* সাইজ লেখার সমান হবে */
-    min-width: 200px; /* খুব ছোট যেন না হয় */
-    height: 60px;
+    /* অন্যান্য সুইচের সমান সাইজ */
+    width: 45% !important; /* গ্রিডের কলামের মতো সাইজ */
+    min-width: unset; /* বড় সাইজ রিমুভ করা হয়েছে */
+    height: 100px; /* অন্যান্য কার্ডের সমান হাইট */
+    
     border: 1px solid #e74c3c;
     background: rgba(231, 76, 60, 0.05);
-    padding: 0 30px; /* ডানে বামে প্যাডিং */
+    padding: 0;
 }
 .master-btn-style .device-name { color: #e74c3c; font-size: 16px; }
 .master-btn-style .status-text { color: #c0392b; font-size: 10px; margin-top: 2px;}
@@ -194,9 +195,9 @@ header {
 .btn-action:active { transform: scale(0.98); }
 
 
-/* --- LOGOUT & LOGIN BUTTONS (AUTO WIDTH) --- */
+/* --- BUTTONS & LOGOUT (Updated) --- */
 .btn {
-    width: auto !important; /* লেখার সমান বড় */
+    width: auto !important;
     min-width: 120px;
     padding: 12px 30px;
     border-radius: 8px;
@@ -204,16 +205,26 @@ header {
     background: #3498db;
     color: white;
     font-weight: bold;
-    margin: 20px auto 0 auto; /* মাঝখানে আনার জন্য */
+    margin: 20px auto 0 auto; 
     display: block;
     cursor: pointer;
 }
 
+/* লগআউট বাটন ডিজাইন (আগের সাইজ, কিন্তু নিচে থাকবে) */
 .logout-btn { 
     background: #e74c3c; 
+    
+    /* পজিশন: একদম নিচে */
     margin-top: auto; 
-    /* মেনুবার থেকে উপরে রাখার জন্য গ্যাপ */
-    margin-bottom: 100px; 
+    margin-bottom: 100px; /* নিচের মেনুবার থেকে যথেষ্ট উপরে */
+    
+    /* সাইজ: সাধারণ ছোট বাটন */
+    width: auto !important;
+    min-width: 120px; 
+    
+    /* এলাইনমেন্ট */
+    align-self: center;
+    text-align: center;
 }
 
 
