@@ -1,6 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-import { getDatabase, ref, set, onValue, remove } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+// এখানে 'update' যোগ করা হয়েছে
+import { getDatabase, ref, set, onValue, remove, update } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
 // --- কনফিগারেশন ---
 const firebaseConfig = {
@@ -150,7 +151,7 @@ function startApp() {
     });
   });
 
-  // 3. LISTEN FOR TIMERS
+  // 3. LISTEN FOR TIMERS (For UI Display)
   onValue(ref(db, "/timers"), (snapshot) => {
     activeTimerList.innerHTML = "";
     const timers = snapshot.val();
@@ -158,6 +159,9 @@ function startApp() {
     if (timers) {
       Object.keys(timers).forEach(key => {
         let data = timers[key];
+        // যদি ডাটা নাল হয়, স্কিপ করবে
+        if(!data) return;
+
         let div = document.createElement("div");
         div.className = "timer-card-item";
         
@@ -227,6 +231,7 @@ document.getElementById("cancelTimerBtn").onclick = () => {
     timerModal.style.display = "none";
 };
 
+// --- ফিক্সড: টাইমার সেভ করার লজিক আপডেট ---
 document.getElementById("saveTimerBtn").onclick = () => {
     let selectedDevice = modalDeviceSelect.value;
     let tOn = modalTimeOn.value;
@@ -238,10 +243,23 @@ document.getElementById("saveTimerBtn").onclick = () => {
     }
     
     if(tOn || tOff) {
-        set(ref(db, "/timers/" + selectedDevice), {
+        // gpio1 থেকে 1 বের করা
+        let index = selectedDevice.replace("gpio", "");
+        
+        // একই সাথে UI এবং ESP32 এর জন্য ডাটা আপডেট করা
+        let updates = {};
+        
+        // ১. UI এর জন্য (যাতে অ্যাপে লিস্ট দেখা যায়)
+        updates["/timers/" + selectedDevice] = {
             on: tOn || "",
             off: tOff || ""
-        })
+        };
+
+        // ২. ESP32 এর জন্য (সরাসরি timeOn1, timeOff1 ফরম্যাটে)
+        updates["/timeOn" + index] = tOn || "";
+        updates["/timeOff" + index] = tOff || "";
+
+        update(ref(db), updates)
         .then(() => {
             timerModal.style.display = "none";
         })
@@ -290,8 +308,17 @@ document.getElementById("saveNameModalBtn").onclick = () => {
     nameModal.style.display = "none";
 };
 
+// --- ফিক্সড: টাইমার ডিলিট ফাংশন ---
 window.deleteTimer = function(key) {
   if(confirm("Delete schedule for this device?")) {
-    remove(ref(db, "/timers/" + key));
+    let index = key.replace("gpio", "");
+    
+    // একসাথে সব জায়গা থেকে ডিলিট করা
+    let updates = {};
+    updates["/timers/" + key] = null; // UI থেকে ডিলিট
+    updates["/timeOn" + index] = "";  // ESP থেকে ডিলিট (ফাঁকা স্ট্রিং)
+    updates["/timeOff" + index] = ""; // ESP থেকে ডিলিট (ফাঁকা স্ট্রিং)
+    
+    update(ref(db), updates);
   }
 }
