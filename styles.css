@@ -139,7 +139,7 @@ header {
     border-radius: 4px;
 }
 
-/* --- MASTER SWITCH (Updated Size) --- */
+/* --- MASTER SWITCH (FIXED SIZE) --- */
 .master-row {
     margin-top: 10px;
     margin-bottom: 30px;
@@ -148,10 +148,10 @@ header {
 }
 
 .master-btn-style {
-    /* অন্যান্য সুইচের সমান সাইজ */
-    width: 45% !important; /* গ্রিডের কলামের মতো সাইজ */
-    min-width: unset; /* বড় সাইজ রিমুভ করা হয়েছে */
-    height: 100px; /* অন্যান্য কার্ডের সমান হাইট */
+    /* অন্যান্য কার্ডের মতো সাইজ */
+    width: 45% !important; 
+    min-width: unset; 
+    height: 100px; 
     
     border: 1px solid #e74c3c;
     background: rgba(231, 76, 60, 0.05);
@@ -195,7 +195,7 @@ header {
 .btn-action:active { transform: scale(0.98); }
 
 
-/* --- BUTTONS & LOGOUT (Updated) --- */
+/* --- BUTTONS & LOGOUT (FIXED POSITION) --- */
 .btn {
     width: auto !important;
     min-width: 120px;
@@ -210,28 +210,24 @@ header {
     cursor: pointer;
 }
 
-/* লগআউট বাটন ডিজাইন (আগের সাইজ, কিন্তু নিচে থাকবে) */
+/* লগআউট বাটন - 50px মার্জিন */
 .logout-btn { 
     background: #e74c3c; 
-    
-    /* পজিশন: একদম নিচে */
     margin-top: auto; 
-    margin-bottom: 100px; /* নিচের মেনুবার থেকে যথেষ্ট উপরে */
+    margin-bottom: 50px; /* 50px গ্যাপ */
     
-    /* সাইজ: সাধারণ ছোট বাটন */
     width: auto !important;
     min-width: 120px; 
     
-    /* এলাইনমেন্ট */
     align-self: center;
     text-align: center;
 }
 
 
-/* --- BOTTOM NAV (FLOATING) --- */
+/* --- BOTTOM NAV (THIN VERSION) --- */
 .bottom-nav {
     position: fixed;
-    bottom: 25px;
+    bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
     width: 85%;
@@ -240,7 +236,10 @@ header {
     display: flex;
     justify-content: space-around;
     align-items: center;
-    padding: 10px;
+    
+    /* চিকন করার জন্য প্যাডিং কমানো হলো */
+    padding: 5px; 
+    
     border-radius: 40px; 
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     border: 1px solid #333;
@@ -254,12 +253,15 @@ header {
     justify-content: center;
     color: #777;
     cursor: pointer;
-    padding: 10px 20px;
+    
+    /* ভেতরের গ্যাপ কমানো হলো */
+    padding: 6px 15px; 
+    
     border-radius: 25px;
     transition: all 0.3s ease;
 }
 
-.nav-item i { font-size: 20px; margin-bottom: 3px; }
+.nav-item i { font-size: 20px; margin-bottom: 2px; }
 .nav-item span { font-size: 11px; font-weight: 500; }
 
 .nav-item.active { 
