@@ -1,13 +1,13 @@
-/* --- GLOBAL SETUP & FONTS --- */
+/* --- GLOBAL SETUP --- */
 body {
     margin: 0;
     padding: 0;
-    background-color: #121216; /* ছবির মতো ডার্ক ব্যাকগ্রাউন্ড */
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background-color: #121216; /* ডার্ক ব্যাকগ্রাউন্ড */
+    font-family: 'Segoe UI', sans-serif;
     color: white;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
-    overflow-x: hidden;
+    overflow: hidden; /* স্ক্রল বন্ধ */
 }
 
 .full-screen-center {
@@ -18,14 +18,15 @@ body {
     background: #121216;
 }
 
-/* --- HEADER STYLES (IMAGE 2 STYLE) --- */
+/* --- HEADER --- */
 header {
-    padding: 30px 20px 20px 20px;
+    padding: 20px;
+    height: 60px;
     display: flex;
     flex-direction: column;
-    align-items: center;
     justify-content: center;
-    background: transparent;
+    align-items: center;
+    background: #121216;
     position: sticky;
     top: 0;
     z-index: 100;
@@ -35,132 +36,180 @@ header {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
-    width: 100%;
+    gap: 8px;
 }
 
 .header-content h2 { 
     margin: 0; 
-    font-size: 32px; /* বড় ফন্ট */
-    font-weight: 700;
+    font-size: 26px; 
+    font-weight: 600;
     color: white;
-    letter-spacing: 0.5px;
 }
 
-/* SYSTEM ONLINE BADGE (OUTLINED) */
+/* Badge Style */
 .status-badge {
-    padding: 6px 16px;
+    padding: 4px 12px;
     border-radius: 20px;
     font-size: 11px;
-    font-weight: 600;
+    font-weight: bold;
     letter-spacing: 1px;
     text-transform: uppercase;
-    border: 1px solid #34c759; /* গ্রিন বর্ডার */
-    background: rgba(52, 199, 89, 0.1); /* হালকা গ্রিন ব্যাকগ্রাউন্ড */
-    color: #34c759;
+    border: 1px solid #2ecc71;
+    color: #2ecc71;
+    background: rgba(46, 204, 113, 0.1);
 }
-
 .status-badge.offline {
-    border-color: #ff453a;
-    background: rgba(255, 69, 58, 0.1);
-    color: #ff453a;
+    border-color: #e74c3c;
+    color: #e74c3c;
+    background: rgba(231, 76, 60, 0.1);
 }
 
 #mainContent {
     padding: 20px;
-    padding-bottom: 110px; /* মেনু বারের জন্য জায়গা */
+    padding-bottom: 100px; /* নিচের মেনুর জন্য জায়গা */
+    height: calc(100vh - 100px); 
+    overflow-y: auto;
+    box-sizing: border-box;
 }
 
-/* --- DEVICE CARDS (IMAGE 2 STYLE) --- */
+/* --- PAGE SECTIONS --- */
+.page-section {
+    display: none;
+    flex-direction: column;
+    height: 100%;
+}
+.active-page {
+    display: flex;
+}
+
+/* --- GRID & CARDS --- */
 .grid-container {
     display: grid;
-    grid-template-columns: 1fr 1fr; /* দুই কলাম */
+    grid-template-columns: 1fr 1fr;
     gap: 15px;
-    margin-bottom: 25px;
+    margin-bottom: 20px;
 }
 
 .device-card {
-    background: #1c1c21; /* কার্ডের কালার */
-    border-radius: 18px; /* বেশি রাউন্ডেড কর্নার */
-    height: 110px; /* হাইট বাড়ানো হয়েছে */
+    background: #1e1e24; /* কার্ডের নরমাল কালার */
+    border-radius: 16px;
+    height: 100px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     gap: 8px; 
     cursor: pointer;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    transition: all 0.2s;
     position: relative;
     border: 1px solid rgba(255,255,255,0.05);
 }
 
 .device-name {
-    font-size: 17px;
+    font-size: 16px;
     font-weight: 600;
-    color: #ffffff;
-    text-align: center;
-    letter-spacing: 0.3px;
+    color: #e0e0e0;
 }
 
 .status-text {
     font-size: 11px;
-    font-weight: 500;
+    font-weight: bold;
     text-transform: uppercase;
-    color: #8e8e93; /* গ্রে কালার */
-    letter-spacing: 0.5px;
+    color: #888;
 }
 
-/* --- ACTIVE STATE (ON) --- */
+/* --- ON STATE (GREEN CARD) --- */
 .device-card.on {
-    background: #ffffff; /* অন হলে সাদা (Apple HomeKit Style) */
+    background: #2ecc71 !important; /* সুইচ অন হলে সবুজ */
+    border-color: #2ecc71 !important;
+    box-shadow: 0 5px 15px rgba(46, 204, 113, 0.4);
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(255, 255, 255, 0.2);
 }
 
-.device-card.on .device-name { color: #000; }
-.device-card.on .status-text { color: #555; font-weight: bold; }
+.device-card.on .device-name {
+    color: #ffffff !important; /* অন হলে লেখা সাদা */
+    font-weight: 700;
+}
 
-/* --- MASTER SWITCH (RED STYLE UPDATED) --- */
+.device-card.on .status-text {
+    color: rgba(255, 255, 255, 0.9) !important;
+    background: rgba(0,0,0,0.1); 
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+/* --- MASTER SWITCH (BOTTOM RED) --- */
 .master-row {
-    margin-top: 10px;
-    display: flex;
-    justify-content: center;
+    margin-top: auto; /* এটি বাটনকে একদম নিচে ঠেলে দেবে */
+    padding-top: 20px;
 }
+
 .master-btn-style {
-    width: 100%; /* ফুল উইডথ */
-    height: 70px;
-    border: 1px solid #ff453a;
-    background: rgba(255, 69, 58, 0.05);
+    width: 100%;
+    height: 75px;
+    border: 1px solid #e74c3c;
+    background: rgba(231, 76, 60, 0.05);
 }
-.master-btn-style .device-name { color: #ff453a; }
+.master-btn-style .device-name { color: #e74c3c; }
+.master-btn-style .status-text { color: #c0392b; }
 
 #masterBtn.on {
-    background: #ff453a !important;
-    border-color: #ff453a !important;
+    background: #e74c3c !important; 
+    border-color: #e74c3c !important;
 }
 #masterBtn.on .device-name { color: white !important; }
-#masterBtn.on .status-text { color: rgba(255,255,255,0.8) !important; }
+#masterBtn.on .status-text { color: white !important; }
 
 
-/* --- BOTTOM NAV (IMAGE 1 STYLE) --- */
+/* --- ACTION BUTTONS (LEFT ALIGNED) --- */
+.action-btn-row {
+    display: flex;
+    justify-content: flex-start; /* বাটন বাম পাশে থাকবে */
+    margin-bottom: 20px;
+}
+
+.btn-action {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px 25px;
+    border-radius: 12px;
+    border: none;
+    font-size: 16px;
+    font-weight: 600;
+    color: white;
+    cursor: pointer;
+    width: auto; 
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+/* Green Button (Timer) */
+.btn-green { background: #2ecc71; }
+/* Blue Button (Rename) */
+.btn-blue { background: #3498db; }
+
+.btn-action:active { transform: scale(0.98); }
+
+
+/* --- BOTTOM NAVIGATION (FLOATING PILL) --- */
 .bottom-nav {
     position: fixed;
-    bottom: 25px; /* ফ্লোটিং লুক */
+    bottom: 25px;
     left: 50%;
     transform: translateX(-50%);
-    width: 90%;
-    max-width: 400px;
+    width: 85%;
+    max-width: 380px;
     
-    background: #000000; /* পিওর ব্ল্যাক */
+    background: #1a1a1d; 
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
     align-items: center;
     
-    padding: 8px 10px;
-    border-radius: 35px; /* পিল শেপ */
-    border: 1px solid #333;
+    padding: 10px;
+    border-radius: 40px; 
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    border: 1px solid #333;
     z-index: 1000;
 }
 
@@ -169,95 +218,62 @@ header {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    color: #8e8e93;
+    color: #777;
     cursor: pointer;
-    transition: all 0.3s ease;
     padding: 10px 20px;
     border-radius: 25px;
-    width: 80px;
+    transition: all 0.3s ease;
 }
 
-.nav-item i { 
-    font-size: 20px; 
-    margin-bottom: 4px; 
-    display: block; 
-}
-.nav-item span { 
-    font-size: 10px; 
-    font-weight: 500; 
-}
+.nav-item i { font-size: 20px; margin-bottom: 3px; }
+.nav-item span { font-size: 11px; font-weight: 500; }
 
-/* ACTIVE NAV ITEM (Green Box Background like Image 1) */
 .nav-item.active { 
-    background-color: rgba(52, 199, 89, 0.2); /* হালকা গ্রিন বক্স */
-    color: #34c759; /* ব্রাইট গ্রিন টেক্সট */
+    background-color: rgba(46, 204, 113, 0.15); 
+    color: #2ecc71; 
 }
 
-.nav-item.active i { transform: translateY(0); }
 
-
-/* --- MODAL STYLES (UPDATED FOR DARK THEME) --- */
+/* --- MODALS --- */
 .modal-overlay {
     position: fixed;
     top: 0; left: 0;
     width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.8);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 2000;
-    backdrop-filter: blur(8px);
+    backdrop-filter: blur(5px);
 }
-
 .modal-box {
-    background: #1c1c1e;
+    background: #1e1e24;
     padding: 25px;
-    border-radius: 20px;
-    width: 280px;
+    border-radius: 15px;
+    width: 80%;
+    max-width: 300px;
     text-align: center;
     border: 1px solid #333;
 }
-
-.modal-box h3 { margin: 10px 0; color: white; font-size: 20px; }
-.modal-box p { color: #8e8e93; margin-bottom: 20px; font-size: 14px; }
-
+.modal-box h3 { margin: 10px 0; color: white; }
+.modal-buttons { display: flex; gap: 10px; margin-top: 20px; }
 .btn-confirm, .btn-cancel {
-    padding: 12px;
-    border-radius: 12px;
-    font-weight: 600;
-    font-size: 14px;
-    margin: 5px;
+    flex: 1; padding: 10px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer;
 }
-.btn-confirm { background: #34c759; color: white; }
-.btn-cancel { background: #3a3a3c; color: white; }
+.btn-confirm { background: #2ecc71; color: black; }
+.btn-cancel { background: #e74c3c; color: white; }
 
 /* INPUTS */
 input, select {
-    background: #2c2c2e;
-    border: none;
-    color: white;
-    padding: 12px;
-    border-radius: 10px;
-    margin: 8px 0;
+    width: 100%; padding: 12px; margin: 8px 0;
+    border-radius: 8px; border: 1px solid #444;
+    background: #2c2c31; color: white; box-sizing: border-box;
 }
 
-/* AUTH PAGE */
-.card {
-    background: #1c1c1e;
-    border-radius: 20px;
-    padding: 30px;
-    text-align: center;
-    width: 85%;
-    max-width: 350px;
-}
-.login-btn { background: #0a84ff; color: white; }
-
-/* Fixed Layout Helpers */
-.page-section {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-}
-.logout-btn { background: #ff453a; margin-top: 20px; width: 100%; }
-.btn-add-timer { background: #34c759; color: white; border-radius: 15px; padding: 15px; margin-bottom: 20px; }
-.timer-card-item { background: #2c2c2e; border-radius: 15px; padding: 15px; border-left: 4px solid #34c759; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+/* LOGIN & TIMER LIST */
+.card { background: #1e1e24; border-radius: 15px; padding: 25px; text-align: center; width: 85%; max-width: 350px; }
+.btn { width: 100%; padding: 12px; border-radius: 8px; border: none; background: #3498db; color: white; font-weight: bold; margin-top: 10px; }
+.logout-btn { background: #e74c3c; margin-top: auto; width: 100%; }
+.timer-list { display: flex; flex-direction: column; gap: 10px; }
+.timer-card-item { background: #2c2c31; padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #2ecc71; }
+.btn-delete-timer { background: transparent; color: #e74c3c; border: none; font-size: 16px; }
