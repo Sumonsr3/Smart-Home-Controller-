@@ -2,20 +2,115 @@
 body {
     margin: 0;
     padding: 0;
-    background-color: #121212; /* Dark Mode Background */
+    background-color: #121212;
     font-family: 'Segoe UI', sans-serif;
     color: white;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
 }
 
-/* Full Screen Centering for Login */
 .full-screen-center {
     height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
     background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+}
+
+/* --- MODAL (POPUP) STYLES --- */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    backdrop-filter: blur(5px);
+}
+
+.modal-box {
+    background: #1e1e1e;
+    padding: 25px;
+    border-radius: 15px;
+    width: 300px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    border: 1px solid #333;
+}
+
+.modal-box h3 { margin: 10px 0; color: white; }
+.modal-box p { color: #aaa; margin-bottom: 20px; font-size: 14px; }
+
+.modal-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.btn-confirm, .btn-cancel {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 14px;
+}
+.btn-confirm { background: #00e676; color: #000; }
+.btn-cancel { background: #e53935; color: white; }
+
+/* --- NEW BUTTON STYLE (Add Timer) --- */
+.btn-add-timer {
+    width: 100%;
+    padding: 18px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #00c853, #b2ff59);
+    color: #000;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(0, 200, 83, 0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    transition: transform 0.2s;
+}
+.btn-add-timer:active { transform: scale(0.98); }
+
+/* --- TIMER LIST STYLES --- */
+.timer-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding-bottom: 20px;
+}
+
+.timer-card-item {
+    background: #252525;
+    padding: 15px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-left: 5px solid #03a9f4;
+}
+
+.t-info { text-align: left; }
+.t-dev-name { display: block; font-size: 16px; font-weight: 600; color: white; }
+.t-time-val { font-size: 13px; color: #aaa; margin-top: 4px; }
+
+.btn-delete-timer {
+    background: #e53935;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
 }
 
 /* Header */
@@ -32,7 +127,6 @@ header {
 }
 .header-content h2 { margin: 0; font-size: 22px; }
 
-/* Status Badge */
 .status-badge {
     padding: 5px 12px;
     border-radius: 20px;
@@ -42,13 +136,11 @@ header {
 .online { background: #00c853; color: white; }
 .offline { background: #e53935; color: white; }
 
-/* Main Content Area */
 #mainContent {
     padding: 20px;
-    padding-bottom: 90px; /* Space for bottom nav */
+    padding-bottom: 90px;
 }
 
-/* Cards */
 .card {
     background: #1e1e1e;
     border-radius: 15px;
@@ -58,7 +150,6 @@ header {
     margin-bottom: 20px;
 }
 
-/* Master Switch Card */
 .master-card {
     background: linear-gradient(135deg, #ff9800, #f57c00);
     border-radius: 15px;
@@ -68,16 +159,52 @@ header {
     justify-content: space-between;
     color: white;
     margin-bottom: 25px;
+    box-shadow: 0 5px 15px rgba(245, 124, 0, 0.3);
 }
-.master-card .icon-area { font-size: 24px; background: rgba(255,255,255,0.2); padding: 10px; border-radius: 50%; }
-.master-card .text-area { text-align: left; flex-grow: 1; margin-left: 15px; }
-.master-card h3 { margin: 0; font-size: 18px; }
-.master-card p { margin: 0; font-size: 12px; opacity: 0.9; }
+.master-card .text-area h3 { margin: 0; font-size: 18px; }
+.master-card .text-area p { margin: 0; font-size: 12px; opacity: 0.9; }
 
-/* Grid Layout for Devices */
+.power-btn {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: none;
+    background: #333;
+    color: #777;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: inset 2px 2px 5px rgba(0,0,0,0.5), inset -2px -2px 5px rgba(255,255,255,0.1);
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+    margin-bottom: 5px;
+}
+
+.master-power-btn {
+    background: rgba(255,255,255,0.2);
+    color: white;
+    box-shadow: none;
+    border: 2px solid rgba(255,255,255,0.4);
+}
+.master-power-btn:active { transform: scale(0.95); }
+
+.power-btn.on {
+    background: #00e676;
+    color: white;
+    box-shadow: 0 0 15px #00e676, inset 2px 2px 5px rgba(0,0,0,0.1);
+    transform: scale(1.05);
+}
+.master-power-btn.on {
+    background: white;
+    color: #f57c00;
+    box-shadow: 0 0 20px rgba(255,255,255,0.6);
+}
+
 .grid-container {
     display: grid;
-    grid-template-columns: 1fr 1fr; /* 2 columns */
+    grid-template-columns: 1fr 1fr;
     gap: 15px;
 }
 
@@ -89,40 +216,14 @@ header {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
+    height: 160px;
 }
-.device-card i { font-size: 24px; margin-bottom: 10px; color: #03a9f4; }
-.device-card span { font-size: 14px; margin-bottom: 10px; display: block; }
+.card-top { display: flex; flex-direction: column; align-items: center; }
+.device-icon { font-size: 20px; color: #03a9f4; margin-bottom: 8px; }
+.device-name { font-size: 14px; font-weight: 600; }
+.status-text { font-size: 11px; color: #888; font-weight: bold; margin-top: 5px; }
 
-/* Toggles */
-.toggle-btn, .toggle-small {
-    width: 50px;
-    height: 28px;
-    background: #555;
-    border-radius: 50px;
-    border: none;
-    position: relative;
-    cursor: pointer;
-    transition: 0.3s;
-}
-.toggle-btn::after, .toggle-small::after {
-    content: '';
-    position: absolute;
-    top: 3px; left: 3px;
-    width: 22px; height: 22px;
-    background: white;
-    border-radius: 50%;
-    transition: 0.3s;
-}
-.on { background: #00e676 !important; }
-.on::after { transform: translateX(22px); }
-
-/* Master Toggle Specifics */
-.master-card .toggle-btn { background: rgba(0,0,0,0.3); }
-.master-card .toggle-btn.on { background: white !important; }
-.master-card .toggle-btn.on::after { background: #f57c00; }
-
-/* Inputs */
 input, select {
     width: 100%;
     padding: 12px;
@@ -134,7 +235,6 @@ input, select {
     box-sizing: border-box;
 }
 
-/* Buttons */
 .btn {
     width: 100%;
     padding: 12px;
@@ -148,7 +248,6 @@ input, select {
 }
 .logout-btn { background: #e53935; margin-top: 30px; }
 
-/* Bottom Navigation */
 .bottom-nav {
     position: fixed;
     bottom: 0;
@@ -156,7 +255,7 @@ input, select {
     background: #1e1e1e;
     display: flex;
     justify-content: space-around;
-    padding: 10px 0;
+    padding: 12px 0;
     box-shadow: 0 -2px 10px rgba(0,0,0,0.3);
     z-index: 1000;
 }
