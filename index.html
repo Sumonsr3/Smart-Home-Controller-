@@ -3,56 +3,171 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>ESP32 6-CH + Master Controller</title>
+<title>Smart Home Pro</title>
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <link rel="stylesheet" href="styles.css">
 <script type="module" src="app.js"></script>
 
 </head>
-
 <body>
 
-<div class="card">
-
-  <h1>ESP32 Smart Control</h1>
-  <div id="statusBadge" class="status-badge offline">Offline</div>
-
-  <div id="authBox">
-    <input id="emailField" type="email" placeholder="Email" />
-    <input id="passwordField" type="password" placeholder="Password" />
-    <button id="loginBtn" class="btn login-btn">Login</button>
-    <p id="authMsg"></p>
+<div id="authContainer" class="full-screen-center">
+  <div class="card">
+    <h1>Welcome Back</h1>
+    <p>Sign in to control your home</p>
+    <div id="authBox">
+      <input id="emailField" type="email" placeholder="Email" />
+      <input id="passwordField" type="password" placeholder="Password" />
+      <button id="loginBtn" class="btn login-btn">Login</button>
+      <p id="authMsg"></p>
+    </div>
   </div>
+</div>
 
-  <div id="controlBox" style="display:none;">
+<div id="appContainer" style="display:none;">
+  
+  <header>
+    <div class="header-content">
+      <h2>My Home</h2>
+      <div id="statusBadge" class="status-badge offline">Offline</div>
+    </div>
+  </header>
 
-    <button id="masterBtn" class="gpio-button master-btn" data-gpio="master">MASTER SWITCH</button>
-    <div id="masterStatus" class="gpio-status">Status: OFF</div>
+  <main id="mainContent">
+    
+    <div id="homePage" class="page-section active-page">
+      
+      <div class="control-card master-card">
+        <div class="icon-area"><i class="fas fa-power-off"></i></div>
+        <div class="text-area">
+          <h3>Master Switch</h3>
+          <p>Control All Devices</p>
+        </div>
+        <button id="masterBtn" class="toggle-btn" data-gpio="master"></button>
+      </div>
 
-    <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.2); margin: 15px 0;">
+      <h4 class="section-title">Rooms & Devices</h4>
+      
+      <div class="grid-container">
+        <div class="device-card">
+          <i class="fas fa-lightbulb"></i>
+          <span id="label_gpio1">Light 1</span>
+          <button id="gpio1Btn" class="toggle-small" data-gpio="gpio1"></button>
+        </div>
+        <div class="device-card">
+          <i class="fas fa-fan"></i>
+          <span id="label_gpio2">Light 2</span>
+          <button id="gpio2Btn" class="toggle-small" data-gpio="gpio2"></button>
+        </div>
+        <div class="device-card">
+          <i class="fas fa-tv"></i>
+          <span id="label_gpio3">Light 3</span>
+          <button id="gpio3Btn" class="toggle-small" data-gpio="gpio3"></button>
+        </div>
+        <div class="device-card">
+          <i class="fas fa-plug"></i>
+          <span id="label_gpio4">Light 4</span>
+          <button id="gpio4Btn" class="toggle-small" data-gpio="gpio4"></button>
+        </div>
+        <div class="device-card">
+          <i class="fas fa-desktop"></i>
+          <span id="label_gpio5">Light 5</span>
+          <button id="gpio5Btn" class="toggle-small" data-gpio="gpio5"></button>
+        </div>
+        <div class="device-card">
+          <i class="fas fa-lamp"></i>
+          <span id="label_gpio6">Light 6</span>
+          <button id="gpio6Btn" class="toggle-small" data-gpio="gpio6"></button>
+        </div>
+      </div>
+    </div>
 
-    <button id="gpio1Btn" class="gpio-button" data-gpio="gpio1">Light 1 (GPIO 1)</button>
-    <div id="gpio1Status" class="gpio-status">Status: OFF</div>
+    <div id="timerPage" class="page-section" style="display:none;">
+      <div class="card">
+        <h3><i class="fas fa-clock"></i> Set Timer</h3>
+        <p>Schedule devices to turn ON/OFF</p>
+        
+        <select id="timerDeviceSelect">
+          <option value="gpio1">Light 1</option>
+          <option value="gpio2">Light 2</option>
+          <option value="gpio3">Light 3</option>
+          <option value="gpio4">Light 4</option>
+          <option value="gpio5">Light 5</option>
+          <option value="gpio6">Light 6</option>
+        </select>
 
-    <button id="gpio2Btn" class="gpio-button" data-gpio="gpio2">Light 2 (GPIO 2)</button>
-    <div id="gpio2Status" class="gpio-status">Status: OFF</div>
+        <div class="time-inputs">
+          <label>On Time:</label>
+          <input type="time" id="timeOn">
+          <label>Off Time:</label>
+          <input type="time" id="timeOff">
+        </div>
 
-    <button id="gpio3Btn" class="gpio-button" data-gpio="gpio3">Light 3 (GPIO 3)</button>
-    <div id="gpio3Status" class="gpio-status">Status: OFF</div>
+        <button id="saveTimerBtn" class="btn">Save Schedule</button>
+        <p id="timerMsg" style="margin-top:10px; color:#aaa; font-size:12px;">(Timer data will be saved to Cloud)</p>
+      </div>
+    </div>
 
-    <button id="gpio4Btn" class="gpio-button" data-gpio="gpio4">Light 4 (GPIO 4)</button>
-    <div id="gpio4Status" class="gpio-status">Status: OFF</div>
+    <div id="settingsPage" class="page-section" style="display:none;">
+      
+      <div class="card">
+        <h3><i class="fas fa-edit"></i> Edit Device Names</h3>
+        <div class="edit-list">
+          <input type="text" id="edit_gpio1" placeholder="Name for Switch 1">
+          <input type="text" id="edit_gpio2" placeholder="Name for Switch 2">
+          <input type="text" id="edit_gpio3" placeholder="Name for Switch 3">
+          <input type="text" id="edit_gpio4" placeholder="Name for Switch 4">
+          <input type="text" id="edit_gpio5" placeholder="Name for Switch 5">
+          <input type="text" id="edit_gpio6" placeholder="Name for Switch 6">
+        </div>
+        <button id="saveNamesBtn" class="btn" style="background:#4caf50;">Save Names</button>
+      </div>
 
-    <button id="gpio5Btn" class="gpio-button" data-gpio="gpio5">Light 5 (GPIO 5)</button>
-    <div id="gpio5Status" class="gpio-status">Status: OFF</div>
+      <button id="logoutBtn" class="btn logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+      
+      <p style="text-align:center; color:#555; margin-top:20px; font-size:12px;">App Version 2.0</p>
+    </div>
 
-    <button id="gpio6Btn" class="gpio-button" data-gpio="gpio6">Light 6 (GPIO 6)</button>
-    <div id="gpio6Status" class="gpio-status">Status: OFF</div>
+  </main>
 
-    <button id="logoutBtn" class="btn logout-btn">Logout</button>
-  </div>
+  <nav class="bottom-nav">
+    <div class="nav-item active" onclick="switchTab('home')">
+      <i class="fas fa-home"></i>
+      <span>Home</span>
+    </div>
+    <div class="nav-item" onclick="switchTab('timer')">
+      <i class="fas fa-stopwatch"></i>
+      <span>Timer</span>
+    </div>
+    <div class="nav-item" onclick="switchTab('settings')">
+      <i class="fas fa-cog"></i>
+      <span>Settings</span>
+    </div>
+  </nav>
 
 </div>
+
+<script>
+  window.switchTab = function(tabName) {
+    // Hide all pages
+    document.getElementById('homePage').style.display = 'none';
+    document.getElementById('timerPage').style.display = 'none';
+    document.getElementById('settingsPage').style.display = 'none';
+    
+    // Remove active class from nav
+    const navItems = document.querySelectorAll('.nav-item');
+    navItems.forEach(item => item.classList.remove('active'));
+
+    // Show selected page
+    document.getElementById(tabName + 'Page').style.display = 'block';
+    
+    // Highlight nav icon
+    if(tabName === 'home') navItems[0].classList.add('active');
+    if(tabName === 'timer') navItems[1].classList.add('active');
+    if(tabName === 'settings') navItems[2].classList.add('active');
+  }
+</script>
 
 </body>
 </html>
