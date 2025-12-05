@@ -1,6 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-// পরিবর্তন ১: এখানে 'update' যোগ করা হয়েছে
 import { getDatabase, ref, set, onValue, remove, update } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
 // --- কনফিগারেশন ---
@@ -98,8 +97,11 @@ onAuthStateChanged(auth, (user) => {
   if (user) {
     authContainer.style.display = "none";
     appContainer.style.display = "block";
-    badge.className = "status-badge online";
-    badge.textContent = "Online";
+    
+    // শুরুতে 'Checking...' বা 'Offline' থাকবে
+    badge.className = "status-badge offline";
+    badge.textContent = "Connecting...";
+    
     startApp();
   } else {
     authContainer.style.display = "flex";
@@ -111,6 +113,40 @@ onAuthStateChanged(auth, (user) => {
 
 function startApp() {
   
+  // --- নতুন লজিক: অনলাইন/অফলাইন চেকার ---
+  let lastHeartbeatTime = 0;
+  
+  // ১. বোর্ড থেকে সিগন্যাল (heartbeat) আসলে টাইম আপডেট হবে
+  onValue(ref(db, "/lastSeen"), (snapshot) => {
+      lastHeartbeatTime = Date.now(); // ডাটা আসার সময় রেকর্ড করা হলো
+      updateBadge(true);
+  });
+
+  // ২. প্রতি ২ সেকেন্ড পর পর চেক করবে শেষ ডাটা কখন এসেছে
+  setInterval(() => {
+      // যদি ১০ সেকেন্ডের (10000ms) বেশি সময় ধরে কোনো ডাটা না আসে
+      if (Date.now() - lastHeartbeatTime > 12000) {
+          updateBadge(false);
+      }
+  }, 2000);
+
+  function updateBadge(isOnline) {
+      if(isOnline) {
+          // যদি আগের ক্লাস offline থাকে তবেই চেঞ্জ করবে (UI flickering কমানোর জন্য)
+          if(badge.textContent !== "ONLINE") {
+            badge.className = "status-badge online";
+            badge.textContent = "ONLINE";
+          }
+      } else {
+          if(badge.textContent !== "OFFLINE") {
+            badge.className = "status-badge offline";
+            badge.textContent = "OFFLINE";
+          }
+      }
+  }
+
+  // --- বাকি সব আগের ফাংশন ---
+
   // 1. Listen for GPIO Status
   [...gpioList, "master"].forEach((key) => {
     onValue(ref(db, "/" + key), (snapshot) => {
@@ -159,7 +195,7 @@ function startApp() {
     if (timers) {
       Object.keys(timers).forEach(key => {
         let data = timers[key];
-        if(!data) return; // ডাটা না থাকলে স্কিপ করবে
+        if(!data) return; 
 
         let div = document.createElement("div");
         div.className = "timer-card-item";
@@ -230,7 +266,7 @@ document.getElementById("cancelTimerBtn").onclick = () => {
     timerModal.style.display = "none";
 };
 
-// --- পরিবর্তন ২: টাইমার সেভ লজিক আপডেট ---
+// --- SAVE TIMER (Updated) ---
 document.getElementById("saveTimerBtn").onclick = () => {
     let selectedDevice = modalDeviceSelect.value;
     let tOn = modalTimeOn.value;
@@ -242,22 +278,19 @@ document.getElementById("saveTimerBtn").onclick = () => {
     }
     
     if(tOn || tOff) {
-        // "gpio1" থেকে "1" বের করা হচ্ছে
         let index = selectedDevice.replace("gpio", "");
-        
         let updates = {};
         
-        // ১. ওয়েবসাইটের লিস্টের জন্য সেভ
+        // UI Update
         updates["/timers/" + selectedDevice] = {
             on: tOn || "",
             off: tOff || ""
         };
 
-        // ২. ESP32 এর জন্য সরাসরি সেভ (timeOn1, timeOff1...)
+        // ESP Update
         updates["/timeOn" + index] = tOn || "";
         updates["/timeOff" + index] = tOff || "";
 
-        // update ফাংশন ব্যবহার করে একসাথে সব পাথ আপডেট করা হচ্ছে
         update(ref(db), updates)
         .then(() => {
             timerModal.style.display = "none";
@@ -307,15 +340,15 @@ document.getElementById("saveNameModalBtn").onclick = () => {
     nameModal.style.display = "none";
 };
 
-// --- পরিবর্তন ৩: টাইমার ডিলিট লজিক আপডেট ---
+// --- DELETE TIMER (Updated) ---
 window.deleteTimer = function(key) {
   if(confirm("Delete schedule for this device?")) {
     let index = key.replace("gpio", "");
     
     let updates = {};
-    updates["/timers/" + key] = null; // UI থেকে ডিলিট
-    updates["/timeOn" + index] = "";  // ESP থেকে ON টাইম ডিলিট
-    updates["/timeOff" + index] = ""; // ESP থেকে OFF টাইম ডিলিট
+    updates["/timers/" + key] = null;
+    updates["/timeOn" + index] = "";
+    updates["/timeOff" + index] = "";
     
     update(ref(db), updates);
   }
