@@ -66,7 +66,7 @@ loginBtn.onclick = async () => {
       document.getElementById("passwordField").value
     );
   } catch (e) {
-    authMsg.textContent = e.message;
+    authMsg.textContent = "Login Failed: " + e.message;
   }
 };
 
@@ -89,7 +89,7 @@ onAuthStateChanged(auth, (user) => {
 
 function startApp() {
   
-  // 1. Listen for GPIO Status
+  // 1. Listen for GPIO Status (Real-time updates from ESP32)
   [...gpioList, "master"].forEach((key) => {
     onValue(ref(db, "/" + key), (snapshot) => {
       let val = snapshot.val() || 0;
@@ -129,7 +129,7 @@ function startApp() {
     });
   });
 
-  // 3. LISTEN FOR TIMERS
+  // 3. LISTEN FOR TIMERS (Display active schedules)
   onValue(ref(db, "/timers"), (snapshot) => {
     activeTimerList.innerHTML = "";
     const timers = snapshot.val();
@@ -141,10 +141,12 @@ function startApp() {
         div.className = "timer-card-item";
         
         let devName = currentDeviceNames[key] || key;
+        
+        // Display Logic
         let schedule = "";
-        if(data.on && data.off) schedule = `ON: ${data.on} <br> OFF: ${data.off}`;
-        else if(data.on) schedule = `ON: ${data.on}`;
-        else if(data.off) schedule = `OFF: ${data.off}`;
+        if(data.on && data.off) schedule = `<i class="fas fa-power-off" style="color:green"></i> ON: ${data.on} <br> <i class="fas fa-power-off" style="color:red"></i> OFF: ${data.off}`;
+        else if(data.on) schedule = `<i class="fas fa-power-off" style="color:green"></i> ON: ${data.on}`;
+        else if(data.off) schedule = `<i class="fas fa-power-off" style="color:red"></i> OFF: ${data.off}`;
         
         div.innerHTML = `
           <div class="t-info">
@@ -158,11 +160,11 @@ function startApp() {
         activeTimerList.appendChild(div);
       });
     } else {
-      activeTimerList.innerHTML = `<p style="text-align:center; color:#555; margin-top:20px;">No active timers.</p>`;
+      activeTimerList.innerHTML = `<p style="text-align:center; color:#555; margin-top:20px;">No active timers set.</p>`;
     }
   });
 
-  // 4. Button Logic (Toggle)
+  // 4. Button Logic (Toggle Switches)
   [...gpioList, "master"].forEach((key) => {
     let btn = document.getElementById(key + "Btn");
     if(btn) {
@@ -194,7 +196,7 @@ function startApp() {
   };
 }
 
-// --- TIMER MODAL LOGIC ---
+// --- TIMER MODAL LOGIC (SAVE TO DB) ---
 document.getElementById("openTimerModalBtn").onclick = () => {
     modalDeviceSelect.value = "";
     modalTimeOn.value = "";
@@ -208,23 +210,33 @@ document.getElementById("cancelTimerBtn").onclick = () => {
 
 document.getElementById("saveTimerBtn").onclick = () => {
     let selectedDevice = modalDeviceSelect.value;
-    let tOn = modalTimeOn.value;
-    let tOff = modalTimeOff.value;
+    let tOn = modalTimeOn.value;   // Format: "HH:MM"
+    let tOff = modalTimeOff.value; // Format: "HH:MM"
 
     if(!selectedDevice) {
         alert("Please select a device!");
         return;
     }
+    
+    // Save to Firebase. The ESP32 will read this path.
     if(tOn || tOff) {
         set(ref(db, "/timers/" + selectedDevice), {
-            on: tOn,
-            off: tOff
+            on: tOn || "",  // Save empty string if not set
+            off: tOff || "" // Save empty string if not set
+        })
+        .then(() => {
+            // Success
+            timerModal.style.display = "none";
+        })
+        .catch((error) => {
+            alert("Error saving timer: " + error.message);
         });
+    } else {
+        alert("Please set at least an ON or OFF time.");
     }
-    timerModal.style.display = "none";
 };
 
-// --- RENAME MODAL LOGIC (NEW) ---
+// --- RENAME MODAL LOGIC ---
 document.getElementById("openNameModalBtn").onclick = () => {
     nameModalDeviceSelect.value = "";
     nameModalInput.value = "";
@@ -235,7 +247,6 @@ document.getElementById("cancelNameModalBtn").onclick = () => {
     nameModal.style.display = "none";
 };
 
-// When user selects a device in Rename Modal, show current name
 nameModalDeviceSelect.onchange = (e) => {
     let key = e.target.value;
     if(currentDeviceNames[key]) {
@@ -262,6 +273,7 @@ document.getElementById("saveNameModalBtn").onclick = () => {
     nameModal.style.display = "none";
 };
 
+// Global function for Delete Button
 window.deleteTimer = function(key) {
   if(confirm("Delete schedule for this device?")) {
     remove(ref(db, "/timers/" + key));
