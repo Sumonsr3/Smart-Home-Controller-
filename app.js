@@ -12,15 +12,15 @@
     onValue
   } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
-  //  Replace With YOUR Firebase Config
+  // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  databaseURL: "https://YOUR_PROJECT_ID.firebaseio.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "SENDER_ID",
-  appId: "APP_ID"
+  apiKey: "AIzaSyAzOuFlqKueEdbPPH83moT9wFgidm8TVBM",
+  authDomain: "smart-home-controller-b3004.firebaseapp.com",
+  databaseURL: "https://smart-home-controller-b3004-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "smart-home-controller-b3004",
+  storageBucket: "smart-home-controller-b3004.firebasestorage.app",
+  messagingSenderId: "471259029586",
+  appId: "1:471259029586:web:6f489f0e3b229593523f8b"
 };
 
   // Initialize Firebase
@@ -114,3 +114,4 @@ const firebaseConfig = {
       lab.style.color = "#d1d1d1";
     }
   }
+
