@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Smart Home Pro</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Smart Home</title>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <link rel="stylesheet" href="styles.css">
@@ -14,49 +14,46 @@
 
 <div id="authContainer" class="full-screen-center">
   <div class="card">
-    <h1>Welcome Back</h1>
-    <p>Sign in to control your home</p>
-    <div id="authBox">
+    <h1 style="margin:0; font-size:28px;">Welcome</h1>
+    <p style="color:#8e8e93;">Sign in to continue</p>
+    <div id="authBox" style="margin-top:20px;">
       <input id="emailField" type="email" placeholder="Email" />
       <input id="passwordField" type="password" placeholder="Password" />
-      <button id="loginBtn" class="btn login-btn">Login</button>
-      <p id="authMsg"></p>
+      <button id="loginBtn" class="btn login-btn" style="width:100%; padding:12px; border-radius:10px; border:none; margin-top:10px; cursor:pointer; font-weight:bold;">Login</button>
+      <p id="authMsg" style="margin-top:10px; font-size:12px;"></p>
     </div>
   </div>
 </div>
 
 <div id="confirmModal" class="modal-overlay" style="display:none;">
   <div class="modal-box">
-    <i class="fas fa-exclamation-triangle" style="font-size: 30px; color: #ff9800; margin-bottom:10px;"></i>
-    <h3>Are you sure?</h3>
-    <p>This will toggle ALL devices.</p>
-    <div class="modal-buttons">
-      <button id="cancelMasterBtn" class="btn-cancel">No</button>
-      <button id="confirmMasterBtn" class="btn-confirm">Yes</button>
+    <i class="fas fa-power-off" style="font-size: 40px; color: #ff453a; margin-bottom:15px;"></i>
+    <h3>Master Switch</h3>
+    <p>Turn ON/OFF all devices?</p>
+    <div class="modal-buttons" style="display:flex;">
+      <button id="cancelMasterBtn" class="btn-cancel" style="flex:1;">Cancel</button>
+      <button id="confirmMasterBtn" class="btn-confirm" style="flex:1; background:#ff453a;">Confirm</button>
     </div>
   </div>
 </div>
 
 <div id="logoutModal" class="modal-overlay" style="display:none;">
   <div class="modal-box">
-    <i class="fas fa-sign-out-alt" style="font-size: 30px; color: #e53935; margin-bottom:10px;"></i>
-    <h3>Log Out?</h3>
-    <p>Are you sure you want to sign out?</p>
-    <div class="modal-buttons">
-      <button id="cancelLogoutBtn" class="btn-cancel">No</button>
-      <button id="confirmLogoutBtn" class="btn-confirm" style="background:#e53935; color:white;">Yes</button>
+    <h3>Log Out</h3>
+    <p>Are you sure you want to exit?</p>
+    <div class="modal-buttons" style="display:flex;">
+      <button id="cancelLogoutBtn" class="btn-cancel" style="flex:1;">Cancel</button>
+      <button id="confirmLogoutBtn" class="btn-confirm" style="flex:1; background:#ff453a;">Log Out</button>
     </div>
   </div>
 </div>
 
 <div id="timerModal" class="modal-overlay" style="display:none;">
   <div class="modal-box">
-    <i class="fas fa-clock" style="font-size: 30px; color: #03a9f4; margin-bottom:10px;"></i>
-    <h3>Set New Timer</h3>
+    <h3>Set Timer</h3>
     <div class="time-inputs" style="text-align:left; margin-top:15px;">
-      <label>Select Device:</label>
-      <select id="modalDeviceSelect">
-        <option value="" disabled selected>Choose a device...</option>
+      <select id="modalDeviceSelect" style="width:100%;">
+        <option value="" disabled selected>Select Device</option>
         <option value="gpio1">Light 1</option>
         <option value="gpio2">Light 2</option>
         <option value="gpio3">Light 3</option>
@@ -64,26 +61,24 @@
         <option value="gpio5">Light 5</option>
         <option value="gpio6">Light 6</option>
       </select>
-      <label>Auto ON Time:</label>
-      <input type="time" id="modalTimeOn">
-      <label>Auto OFF Time:</label>
-      <input type="time" id="modalTimeOff">
+      <label style="font-size:12px; color:#8e8e93; display:block; margin-top:10px;">ON Time</label>
+      <input type="time" id="modalTimeOn" style="width:100%;">
+      <label style="font-size:12px; color:#8e8e93; display:block; margin-top:10px;">OFF Time</label>
+      <input type="time" id="modalTimeOff" style="width:100%;">
     </div>
-    <div class="modal-buttons" style="margin-top:20px;">
-      <button id="cancelTimerBtn" class="btn-cancel">Cancel</button>
-      <button id="saveTimerBtn" class="btn-confirm" style="background:#03a9f4; color:white;">Save</button>
+    <div class="modal-buttons" style="display:flex; margin-top:20px;">
+      <button id="cancelTimerBtn" class="btn-cancel" style="flex:1;">Cancel</button>
+      <button id="saveTimerBtn" class="btn-confirm" style="flex:1;">Save</button>
     </div>
   </div>
 </div>
 
 <div id="nameModal" class="modal-overlay" style="display:none;">
   <div class="modal-box">
-    <i class="fas fa-edit" style="font-size: 30px; color: #4caf50; margin-bottom:10px;"></i>
-    <h3>Rename Switch</h3>
+    <h3>Rename</h3>
     <div class="time-inputs" style="text-align:left; margin-top:15px;">
-      <label>Select Device:</label>
-      <select id="nameModalDeviceSelect">
-        <option value="" disabled selected>Choose...</option>
+      <select id="nameModalDeviceSelect" style="width:100%;">
+        <option value="" disabled selected>Select Device</option>
         <option value="gpio1">Light 1</option>
         <option value="gpio2">Light 2</option>
         <option value="gpio3">Light 3</option>
@@ -91,12 +86,11 @@
         <option value="gpio5">Light 5</option>
         <option value="gpio6">Light 6</option>
       </select>
-      <label>New Name:</label>
-      <input type="text" id="nameModalInput" placeholder="e.g. Bedroom Light">
+      <input type="text" id="nameModalInput" placeholder="New Name" style="width:100%; margin-top:10px;">
     </div>
-    <div class="modal-buttons" style="margin-top:20px;">
-      <button id="cancelNameModalBtn" class="btn-cancel">Cancel</button>
-      <button id="saveNameModalBtn" class="btn-confirm" style="background:#4caf50; color:white;">Save</button>
+    <div class="modal-buttons" style="display:flex; margin-top:20px;">
+      <button id="cancelNameModalBtn" class="btn-cancel" style="flex:1;">Cancel</button>
+      <button id="saveNameModalBtn" class="btn-confirm" style="flex:1;">Save</button>
     </div>
   </div>
 </div>
@@ -106,59 +100,62 @@
   <header>
     <div class="header-content">
       <h2>My Home</h2>
-      <div id="statusBadge" class="status-badge offline">Offline</div>
+      <div id="statusBadge" class="status-badge offline">SYSTEM OFFLINE</div>
     </div>
   </header>
 
   <main id="mainContent">
     
     <div id="homePage" class="page-section active-page">
-      <div class="home-content-wrapper">
-          <h4 class="section-title">Rooms & Devices</h4>
-          <div class="grid-container">
-            <div id="gpio1Btn" class="device-card"><span id="label_gpio1" class="device-name">Light 1</span><span id="status_gpio1" class="status-text">OFF</span></div>
-            <div id="gpio2Btn" class="device-card"><span id="label_gpio2" class="device-name">Light 2</span><span id="status_gpio2" class="status-text">OFF</span></div>
-            <div id="gpio3Btn" class="device-card"><span id="label_gpio3" class="device-name">Light 3</span><span id="status_gpio3" class="status-text">OFF</span></div>
-            <div id="gpio4Btn" class="device-card"><span id="label_gpio4" class="device-name">Light 4</span><span id="status_gpio4" class="status-text">OFF</span></div>
-            <div id="gpio5Btn" class="device-card"><span id="label_gpio5" class="device-name">Light 5</span><span id="status_gpio5" class="status-text">OFF</span></div>
-            <div id="gpio6Btn" class="device-card"><span id="label_gpio6" class="device-name">Light 6</span><span id="status_gpio6" class="status-text">OFF</span></div>
-          </div>
+      <div class="grid-container">
+        <div id="gpio1Btn" class="device-card"><span id="label_gpio1" class="device-name">Light 1</span><span id="status_gpio1" class="status-text">OFF</span></div>
+        <div id="gpio2Btn" class="device-card"><span id="label_gpio2" class="device-name">Light 2</span><span id="status_gpio2" class="status-text">OFF</span></div>
+        <div id="gpio3Btn" class="device-card"><span id="label_gpio3" class="device-name">Fan 1</span><span id="status_gpio3" class="status-text">OFF</span></div>
+        <div id="gpio4Btn" class="device-card"><span id="label_gpio4" class="device-name">Socket 1</span><span id="status_gpio4" class="status-text">OFF</span></div>
+        <div id="gpio5Btn" class="device-card"><span id="label_gpio5" class="device-name">Socket 2</span><span id="status_gpio5" class="status-text">OFF</span></div>
+        <div id="gpio6Btn" class="device-card"><span id="label_gpio6" class="device-name">0</span><span id="status_gpio6" class="status-text">OFF</span></div>
       </div>
       
       <div class="master-row">
         <div id="masterBtn" class="device-card master-btn-style">
             <span class="device-name">Master Switch</span>
-            <span class="status-text">OFF</span>
+            <span class="status-text" style="color:#ff453a;">TAP TO TOGGLE ALL</span>
         </div>
       </div>
     </div>
 
     <div id="timerPage" class="page-section" style="display:none;">
       <button id="openTimerModalBtn" class="btn-add-timer">
-        <i class="fas fa-plus-circle"></i> Set New Timer
+        <i class="fas fa-plus"></i> Add New Timer
       </button>
-      <h4 class="section-title" style="margin-top:20px;">Active Schedules</h4>
-      <div id="activeTimerList" class="timer-list">
-        <p style="text-align:center; color:#555; margin-top:20px;">No active timers.</p>
+      <div id="activeTimerList" class="timer-list" style="margin-top:10px;">
+        <p style="text-align:center; color:#555; margin-top:20px;">No timers set.</p>
       </div>
     </div>
 
-    <div id="settingsPage" class="page-section" style="display:none;">
-      <div class="settings-content">
-        <h4 class="section-title">Configuration</h4>
-        <button id="openNameModalBtn" class="btn-add-timer" style="background: linear-gradient(135deg, #2196f3, #21cbf3); color: white;">
-          <i class="fas fa-edit"></i> Rename Switches
+    <div id="settingsPage" class="page-section" style="display:none; flex-direction:column; justify-content:space-between; height:100%;">
+      <div>
+        <button id="openNameModalBtn" class="btn-add-timer" style="background: #0a84ff;">
+          <i class="fas fa-pen"></i> Rename Devices
         </button>
       </div>
-      <button id="logoutBtn" class="btn logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+      <button id="logoutBtn" class="btn logout-btn" style="padding:15px; border-radius:15px; border:none; color:white; font-weight:bold; cursor:pointer;">
+        Log Out
+      </button>
     </div>
 
   </main>
 
   <nav class="bottom-nav">
-    <div class="nav-item active" onclick="switchTab('home')"><i class="fas fa-home"></i> <span>Home</span></div>
-    <div class="nav-item" onclick="switchTab('timer')"><i class="fas fa-stopwatch"></i> <span>Timer</span></div>
-    <div class="nav-item" onclick="switchTab('settings')"><i class="fas fa-cog"></i> <span>Settings</span></div>
+    <div class="nav-item active" onclick="switchTab('home')">
+      <i class="fas fa-home"></i> <span>Home</span>
+    </div>
+    <div class="nav-item" onclick="switchTab('timer')">
+      <i class="fas fa-stopwatch"></i> <span>Timer</span>
+    </div>
+    <div class="nav-item" onclick="switchTab('settings')">
+      <i class="fas fa-cog"></i> <span>Settings</span>
+    </div>
   </nav>
 
 </div>
@@ -173,8 +170,6 @@
     navItems.forEach(item => item.classList.remove('active'));
 
     const targetPage = document.getElementById(tabName + 'Page');
-    
-    // Apply Flexbox to HOME and SETTINGS for fixed layout
     if(tabName === 'home' || tabName === 'settings') {
         targetPage.style.display = 'flex';
     } else {
