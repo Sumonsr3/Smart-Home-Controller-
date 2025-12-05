@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-// এখানে 'update' যোগ করা হয়েছে
+// পরিবর্তন ১: এখানে 'update' যোগ করা হয়েছে
 import { getDatabase, ref, set, onValue, remove, update } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
 // --- কনফিগারেশন ---
@@ -151,7 +151,7 @@ function startApp() {
     });
   });
 
-  // 3. LISTEN FOR TIMERS (For UI Display)
+  // 3. LISTEN FOR TIMERS
   onValue(ref(db, "/timers"), (snapshot) => {
     activeTimerList.innerHTML = "";
     const timers = snapshot.val();
@@ -159,8 +159,7 @@ function startApp() {
     if (timers) {
       Object.keys(timers).forEach(key => {
         let data = timers[key];
-        // যদি ডাটা নাল হয়, স্কিপ করবে
-        if(!data) return;
+        if(!data) return; // ডাটা না থাকলে স্কিপ করবে
 
         let div = document.createElement("div");
         div.className = "timer-card-item";
@@ -231,7 +230,7 @@ document.getElementById("cancelTimerBtn").onclick = () => {
     timerModal.style.display = "none";
 };
 
-// --- ফিক্সড: টাইমার সেভ করার লজিক আপডেট ---
+// --- পরিবর্তন ২: টাইমার সেভ লজিক আপডেট ---
 document.getElementById("saveTimerBtn").onclick = () => {
     let selectedDevice = modalDeviceSelect.value;
     let tOn = modalTimeOn.value;
@@ -243,22 +242,22 @@ document.getElementById("saveTimerBtn").onclick = () => {
     }
     
     if(tOn || tOff) {
-        // gpio1 থেকে 1 বের করা
+        // "gpio1" থেকে "1" বের করা হচ্ছে
         let index = selectedDevice.replace("gpio", "");
         
-        // একই সাথে UI এবং ESP32 এর জন্য ডাটা আপডেট করা
         let updates = {};
         
-        // ১. UI এর জন্য (যাতে অ্যাপে লিস্ট দেখা যায়)
+        // ১. ওয়েবসাইটের লিস্টের জন্য সেভ
         updates["/timers/" + selectedDevice] = {
             on: tOn || "",
             off: tOff || ""
         };
 
-        // ২. ESP32 এর জন্য (সরাসরি timeOn1, timeOff1 ফরম্যাটে)
+        // ২. ESP32 এর জন্য সরাসরি সেভ (timeOn1, timeOff1...)
         updates["/timeOn" + index] = tOn || "";
         updates["/timeOff" + index] = tOff || "";
 
+        // update ফাংশন ব্যবহার করে একসাথে সব পাথ আপডেট করা হচ্ছে
         update(ref(db), updates)
         .then(() => {
             timerModal.style.display = "none";
@@ -308,16 +307,15 @@ document.getElementById("saveNameModalBtn").onclick = () => {
     nameModal.style.display = "none";
 };
 
-// --- ফিক্সড: টাইমার ডিলিট ফাংশন ---
+// --- পরিবর্তন ৩: টাইমার ডিলিট লজিক আপডেট ---
 window.deleteTimer = function(key) {
   if(confirm("Delete schedule for this device?")) {
     let index = key.replace("gpio", "");
     
-    // একসাথে সব জায়গা থেকে ডিলিট করা
     let updates = {};
     updates["/timers/" + key] = null; // UI থেকে ডিলিট
-    updates["/timeOn" + index] = "";  // ESP থেকে ডিলিট (ফাঁকা স্ট্রিং)
-    updates["/timeOff" + index] = ""; // ESP থেকে ডিলিট (ফাঁকা স্ট্রিং)
+    updates["/timeOn" + index] = "";  // ESP থেকে ON টাইম ডিলিট
+    updates["/timeOff" + index] = ""; // ESP থেকে OFF টাইম ডিলিট
     
     update(ref(db), updates);
   }
