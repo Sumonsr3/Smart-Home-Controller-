@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>ESP32 GPIO Controller</title>
+<title>ESP32 6-CH + Master Controller</title>
 
 <link rel="stylesheet" href="styles.css">
 <script type="module" src="app.js"></script>
@@ -14,10 +14,9 @@
 
 <div class="card">
 
-  <h1>ESP32 GPIO Control</h1>
+  <h1>ESP32 Smart Control</h1>
   <div id="statusBadge" class="status-badge offline">Offline</div>
 
-  <!-- Login UI -->
   <div id="authBox">
     <input id="emailField" type="email" placeholder="Email" />
     <input id="passwordField" type="password" placeholder="Password" />
@@ -25,25 +24,35 @@
     <p id="authMsg"></p>
   </div>
 
-  <!-- Control UI -->
   <div id="controlBox" style="display:none;">
 
-    <button id="gpio1Btn" class="gpio-button" data-gpio="gpio1">GPIO 1</button>
+    <button id="masterBtn" class="gpio-button master-btn" data-gpio="master">MASTER SWITCH</button>
+    <div id="masterStatus" class="gpio-status">Status: OFF</div>
+
+    <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.2); margin: 15px 0;">
+
+    <button id="gpio1Btn" class="gpio-button" data-gpio="gpio1">Light 1 (GPIO 1)</button>
     <div id="gpio1Status" class="gpio-status">Status: OFF</div>
 
-    <button id="gpio2Btn" class="gpio-button" data-gpio="gpio2">GPIO 2</button>
+    <button id="gpio2Btn" class="gpio-button" data-gpio="gpio2">Light 2 (GPIO 2)</button>
     <div id="gpio2Status" class="gpio-status">Status: OFF</div>
 
-    <button id="gpio3Btn" class="gpio-button" data-gpio="gpio3">GPIO 3</button>
+    <button id="gpio3Btn" class="gpio-button" data-gpio="gpio3">Light 3 (GPIO 3)</button>
     <div id="gpio3Status" class="gpio-status">Status: OFF</div>
+
+    <button id="gpio4Btn" class="gpio-button" data-gpio="gpio4">Light 4 (GPIO 4)</button>
+    <div id="gpio4Status" class="gpio-status">Status: OFF</div>
+
+    <button id="gpio5Btn" class="gpio-button" data-gpio="gpio5">Light 5 (GPIO 5)</button>
+    <div id="gpio5Status" class="gpio-status">Status: OFF</div>
+
+    <button id="gpio6Btn" class="gpio-button" data-gpio="gpio6">Light 6 (GPIO 6)</button>
+    <div id="gpio6Status" class="gpio-status">Status: OFF</div>
 
     <button id="logoutBtn" class="btn logout-btn">Logout</button>
   </div>
 
 </div>
-
-<!-- JS + Firebase Integrated -->
-
 
 </body>
 </html>
