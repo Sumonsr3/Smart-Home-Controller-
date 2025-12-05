@@ -22,6 +22,7 @@ const gpioList = ["gpio1", "gpio2", "gpio3", "gpio4", "gpio5", "gpio6"];
 let currentDeviceNames = {}; 
 
 // UI Elements
+const loadingScreen = document.getElementById("loadingScreen"); // নতুন এলিমেন্ট
 const authContainer = document.getElementById("authContainer");
 const appContainer = document.getElementById("appContainer");
 const loginBtn = document.getElementById("loginBtn");
@@ -79,19 +80,24 @@ confirmLogoutBtn.onclick = () => {
     signOut(auth).then(() => { logoutModal.style.display = "none"; }).catch((error) => { alert(error.message); });
 };
 
+// --- মেইন পরিবর্তন এখানে ---
 onAuthStateChanged(auth, (user) => {
+  // ১. চেকিং শেষ, তাই লোডিং স্ক্রিন সরিয়ে ফেলব
+  if(loadingScreen) loadingScreen.style.display = "none";
+
   if (user) {
+    // ২. ইউজার লগইন থাকলে লগইন পেজ হাইড, অ্যাপ শো
     authContainer.style.display = "none";
     appContainer.style.display = "block";
     
-    // শুরুতে ডিফল্ট স্ট্যাটাস "Connecting..." থাকবে
     badge.className = "status-badge offline"; 
-    badge.style.color = "#f1c40f"; // Yellow color for checking
+    badge.style.color = "#f1c40f"; 
     badge.style.borderColor = "#f1c40f";
     badge.textContent = "Checking...";
     
     startApp();
   } else {
+    // ৩. ইউজার না থাকলে লগইন পেজ শো (এখন ফ্লেক্স দেওয়া হচ্ছে)
     authContainer.style.display = "flex";
     appContainer.style.display = "none";
     badge.className = "status-badge offline";
@@ -100,30 +106,19 @@ onAuthStateChanged(auth, (user) => {
 });
 
 function startApp() {
-  
-  // --- নতুন লজিক: স্মার্ট অনলাইন চেকার ---
   let lastHeartbeatTime = Date.now();
-  let isFirstLoad = true; // প্রথম লোড ডিটেক্ট করার জন্য
+  let isFirstLoad = true; 
   
   onValue(ref(db, "/lastSeen"), (snapshot) => {
-      // এই ফাংশনটি কল হয় যখনই ডাটাবেসে ডাটা আসে
-      
       if (isFirstLoad) {
-          // প্রথমবার (পেজ লোড হওয়ার সময়) আমরা এই ডাটা বিশ্বাস করব না
-          // কারণ এটি পুরানো ডাটাও হতে পারে।
           isFirstLoad = false;
-          // আমরা lastHeartbeatTime আপডেট করলাম না, যাতে টাইমার চেক করতে থাকে
       } else {
-          // এটি দ্বিতীয় বা তার পরের সিগন্যাল, মানে ডিভাইস লাইভ আছে
           lastHeartbeatTime = Date.now();
           updateBadge(true);
       }
   });
 
-  // প্রতি ১ সেকেন্ড পর পর চেক করবে
   setInterval(() => {
-      // যদি ১০ সেকেন্ডের বেশি সময় ধরে নতুন ডাটা না আসে
-      // (ESP32 প্রতি ৫ সেকেন্ডে পাঠায়, তাই ১০ সেকেন্ড সেফ লিমিট)
       if (Date.now() - lastHeartbeatTime > 10000) {
           updateBadge(false);
       }
@@ -133,22 +128,21 @@ function startApp() {
       if(isOnline) {
           if(badge.textContent !== "ONLINE") {
             badge.className = "status-badge online";
-            badge.style.color = "#2ecc71"; // Green
+            badge.style.color = "#2ecc71";
             badge.style.borderColor = "#2ecc71";
             badge.textContent = "ONLINE";
           }
       } else {
           if(badge.textContent !== "OFFLINE") {
             badge.className = "status-badge offline";
-            badge.style.color = "#e74c3c"; // Red
+            badge.style.color = "#e74c3c";
             badge.style.borderColor = "#e74c3c";
             badge.textContent = "OFFLINE";
           }
       }
   }
 
-  // --- বাকি কোড অপরিবর্তিত ---
-  
+  // --- পূর্বের কোড ---
   [...gpioList, "master"].forEach((key) => {
     onValue(ref(db, "/" + key), (snapshot) => {
       let val = snapshot.val() || 0;
